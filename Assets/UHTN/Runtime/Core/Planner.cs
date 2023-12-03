@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace UHTN
 {
-    public enum AgentExecuteType
+    public enum PlannerExecutionType
     {
         RunUntilSuccess,
         RePlanForever
@@ -15,7 +15,7 @@ namespace UHTN
     {
         public bool IsRunning { get; private set; }
 
-        public AgentExecuteType ExecuteType { get; set; }
+        public PlannerExecutionType ExecutionType { get; set; }
 
         private readonly PlanRunner _planRunner = new();
         public PlanRunner PlanRunner => _planRunner;
@@ -138,7 +138,7 @@ namespace UHTN
             switch (_planRunner.State)
             {
                 case PlanRunner.RunnerState.Success:
-                    if (ExecuteType == AgentExecuteType.RunUntilSuccess)
+                    if (ExecutionType == PlannerExecutionType.RunUntilSuccess)
                     {
                         IsRunning = false;
                         return false;

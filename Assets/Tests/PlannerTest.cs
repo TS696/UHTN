@@ -31,7 +31,7 @@ namespace Tests
 
             var (domain, worldState) = builder.Resolve();
             var planner = new Planner(domain, worldState);
-            planner.ExecuteType = AgentExecuteType.RunUntilSuccess;
+            planner.ExecutionType = PlannerExecutionType.RunUntilSuccess;
             planner.Begin();
 
             while (planner.IsRunning)
@@ -64,8 +64,8 @@ namespace Tests
             var planner = new Planner(domain, worldState);
             var tickCount = 0;
 
-            planner.ExecuteType = AgentExecuteType.RunUntilSuccess;
-            
+            planner.ExecutionType = PlannerExecutionType.RunUntilSuccess;
+
             planner.Begin();
 
             while (planner.IsRunning)
