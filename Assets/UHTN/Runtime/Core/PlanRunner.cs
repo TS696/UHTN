@@ -140,6 +140,7 @@ namespace UHTN
 
             if (_isWorldStateDirty)
             {
+                _isWorldStateDirty = false;
                 var (isContinue, failedProcessIndex) = CheckCondition(_worldState);
                 if (!isContinue)
                 {
@@ -147,10 +148,8 @@ namespace UHTN
                     FailedProcessIndex = failedProcessIndex;
                     StopCurrentOperation();
                     OnStop();
+                    return;
                 }
-
-                _isWorldStateDirty = false;
-                return;
             }
 
             _state = TickOperator();
