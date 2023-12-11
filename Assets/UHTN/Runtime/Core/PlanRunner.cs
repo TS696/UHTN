@@ -67,6 +67,8 @@ namespace UHTN
 
             _processList.Clear();
             FailedProcessIndex = -1;
+            _isWorldStateDirty = false;
+
             _processList.Add(new Process(plan));
             OnProcessUpdated?.Invoke();
 
@@ -85,6 +87,7 @@ namespace UHTN
             }
 
             FailedProcessIndex = -1;
+            _isWorldStateDirty = false;
 
             _processList.RemoveRange(processIndex, _processList.Count - processIndex);
             _processList.Add(new Process(newPlan));
