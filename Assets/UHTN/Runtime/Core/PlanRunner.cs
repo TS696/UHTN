@@ -162,12 +162,14 @@ namespace UHTN
 
         public void Stop()
         {
-            if (_state != RunnerState.Running)
+            if (_state == RunnerState.None)
             {
                 return;
             }
 
-            _state = RunnerState.Failed;
+            FailedProcessIndex = -1;
+            _state = RunnerState.None;
+
             StopCurrentOperation();
             OnStop();
         }
@@ -304,6 +306,7 @@ namespace UHTN
             {
                 if (!PlannerCore.PlanImmediate(_domain, _worldState, out var partialPlan, nextTaskIndex))
                 {
+                    FailedProcessIndex = _processList.Count - 1;
                     return RunnerState.Failed;
                 }
 

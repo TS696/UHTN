@@ -123,6 +123,11 @@ namespace UHTN
             {
                 CompletePlanRequest();
             }
+            else if (_planRunner.State == PlanRunner.RunnerState.None)
+            {
+                RequestPlan(PlanRequestType.Begin);
+                CompletePlanRequest();
+            }
 
             if (!IsRunning)
             {
@@ -180,6 +185,18 @@ namespace UHTN
                 }
 
                 return;
+            }
+
+            if (_planRequest.RequestType == PlanRequestType.ReplaceAndResume)
+            {
+                var processIndex = _planRequest.ProcessIndex - 1;
+                if (processIndex >= 0)
+                {
+                    var process = _planRunner.Processes[processIndex];
+                    RequestPlan(PlanRequestType.ReplaceAndResume, process.Plan.TargetTaskIndex, processIndex);
+                    CompletePlanRequest();
+                    return;
+                }
             }
 
             _planRunner.Stop();
