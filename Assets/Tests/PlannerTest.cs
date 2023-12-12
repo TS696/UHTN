@@ -84,5 +84,110 @@ namespace Tests
             LogAssert.Expect(LogType.Log, "Method2");
             LogAssert.Expect(LogType.Log, "Method1");
         }
+
+        [Test]
+        public void MtrRePlanTest()
+        {
+            var builder = DomainBuilder<TestState>.Create();
+
+            builder.Root
+                .Methods(
+                    builder.Method()
+                        .Precondition(TestState.A, StateCondition.Equal(1))
+                        .SubTasks(
+                            builder.Primitive().Operator(() => Debug.Log("LogA"))
+                        ),
+                    builder.Method()
+                        .SubTasks(
+                            builder.Primitive().Operator(() => Debug.Log("LogB")),
+                            builder.Primitive().Operator(() => Debug.Log("LogC")),
+                            builder.Primitive().Operator(() => Debug.Log("LogD"))
+                        )
+                );
+
+            var (domain, worldState) = builder.Resolve();
+            var planner = new Planner(domain, worldState);
+            planner.ExecutionType = PlannerExecutionType.RunUntilSuccess;
+            planner.Begin();
+
+            var count = 0;
+
+            while (planner.IsRunning)
+            {
+                count++;
+                if (count >= 3)
+                {
+                    worldState.SetInt(TestState.A, 1);
+                }
+
+                planner.Tick();
+            }
+
+            LogAssert.Expect(LogType.Log, "LogB");
+            LogAssert.Expect(LogType.Log, "LogC");
+            LogAssert.Expect(LogType.Log, "LogA");
+
+            planner.Dispose();
+        }
+
+        [Test]
+        public void NestedMtrRePlanTest()
+        {
+            var builder = DomainBuilder<TestState>.Create();
+
+            builder.Root
+                .Methods(
+                    builder.Method().Precondition(TestState.A, StateCondition.Equal(2))
+                        .SubTasks(
+                            builder.Primitive().Operator(() => Debug.Log("LogA"))
+                        ),
+                    builder.Method()
+                        .SubTasks(
+                            builder.Compound()
+                                .Methods(
+                                    builder.Method().Precondition(TestState.A, StateCondition.Equal(1))
+                                        .SubTasks(
+                                            builder.Primitive().Operator(() => Debug.Log("LogB")),
+                                            builder.Primitive().Operator(() => Debug.Log("LogC")),
+                                            builder.Primitive().Operator(() => Debug.Log("LogD"))
+                                        ),
+                                    builder.Method()
+                                        .SubTasks(
+                                            builder.Primitive().Operator(() => Debug.Log("LogE")),
+                                            builder.Primitive().Operator(() => Debug.Log("LogF")),
+                                            builder.Primitive().Operator(() => Debug.Log("LogG"))
+                                        )
+                                )
+                        )
+                );
+
+            var (domain, worldState) = builder.Resolve();
+            var planner = new Planner(domain, worldState);
+            planner.ExecutionType = PlannerExecutionType.RunUntilSuccess;
+            planner.Begin();
+
+            var count = 0;
+            while (planner.IsRunning)
+            {
+                count++;
+                if (count >= 4)
+                {
+                    worldState.SetInt(TestState.A, 2);
+                }
+                else if (count >= 3)
+                {
+                    worldState.SetInt(TestState.A, 1);
+                }
+
+                planner.Tick();
+            }
+
+            LogAssert.Expect(LogType.Log, "LogE");
+            LogAssert.Expect(LogType.Log, "LogF");
+            LogAssert.Expect(LogType.Log, "LogB");
+            LogAssert.Expect(LogType.Log, "LogA");
+
+            planner.Dispose();
+        }
     }
 }

@@ -268,9 +268,9 @@ namespace UHTN
 
         public void Dispose()
         {
-            _domain.Dispose();
             _planRequest.Dispose();
             _planRunner.Stop();
+            _domain.Dispose();
         }
     }
 }

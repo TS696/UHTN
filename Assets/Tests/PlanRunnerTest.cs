@@ -71,6 +71,41 @@ namespace Tests
         }
 
         [Test]
+        public void WorldStateDirtyTest()
+        {
+            var builder = DomainBuilder<TestState>.Create();
+            var contextValue = 0;
+
+            builder.Root
+                .Methods(
+                    builder.Method().Precondition(TestState.A, StateCondition.Equal(0))
+                        .SubTasks(
+                            builder.Primitive().Operator(() => contextValue++),
+                            builder.Primitive().Operator(() => contextValue++),
+                            builder.Primitive().Operator(() => contextValue++)
+                        )
+                );
+
+            var (domain, worldState) = builder.Resolve();
+            Assert.IsTrue(PlannerCore.PlanImmediate(domain, worldState, out var plan));
+
+            var planRunner = new PlanRunner();
+            planRunner.Begin(domain, plan, worldState);
+
+            while (planRunner.State == PlanRunner.RunnerState.Running)
+            {
+                planRunner.Tick();
+                worldState.SetInt(TestState.A, 1);
+                worldState.SetInt(TestState.A, 0);
+            }
+
+            Assert.AreEqual(3, contextValue);
+            Assert.AreEqual(PlanRunner.RunnerState.Success, planRunner.State);
+
+            domain.Dispose();
+        }
+
+        [Test]
         public void PlanRunnerFailTest()
         {
             var builder = DomainBuilder<TestState>.Create();
