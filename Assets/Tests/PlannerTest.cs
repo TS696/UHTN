@@ -189,5 +189,67 @@ namespace Tests
 
             planner.Dispose();
         }
+
+        [Test]
+        public void NestedDelayedPlanFailTest()
+        {
+            var builder = DomainBuilder<TestState>.Create();
+
+            builder.Root
+                .Methods(
+                    builder.Method()
+                        .SubTasks(
+                            builder.Primitive().Operator(() => Debug.Log($"LogA")),
+                            builder.Compound(DecompositionTiming.Delayed)
+                                .Methods(
+                                    builder.Method().Precondition(TestState.A, StateCondition.Equal(0))
+                                        .SubTasks(
+                                            builder.Primitive().Operator(() => Debug.Log("LogB")),
+                                            builder.Primitive().Operator(() => Debug.Log("LogC")),
+                                            builder.Compound(DecompositionTiming.Delayed)
+                                                .Methods(
+                                                    builder.Method()
+                                                        .SubTasks(
+                                                            builder.Primitive().Operator(() => Debug.Log("LogD")),
+                                                            builder.Primitive().Operator(() => Debug.Log("LogE")),
+                                                            builder.Primitive().Precondition(TestState.A,
+                                                                    StateCondition.Equal(0))
+                                                                .Operator(() => Debug.Log("LogF"))
+                                                        )
+                                                )
+                                        ),
+                                    builder.Method().Precondition(TestState.A, StateCondition.Equal(1))
+                                        .SubTasks(
+                                            builder.Primitive().Operator(() => Debug.Log("LogG"))
+                                        )
+                                )
+                        )
+                );
+
+            var (domain, worldState) = builder.Resolve();
+            var planner = new Planner(domain, worldState);
+            planner.ExecutionType = PlannerExecutionType.RunUntilSuccess;
+            planner.Begin();
+
+            var count = 0;
+            while (planner.IsRunning && count < 100)
+            {
+                count++;
+                if (count >= 5)
+                {
+                    worldState.SetInt(TestState.A, 1);
+                }
+
+                planner.Tick();
+            }
+
+            LogAssert.Expect(LogType.Log, "LogA");
+            LogAssert.Expect(LogType.Log, "LogB");
+            LogAssert.Expect(LogType.Log, "LogC");
+            LogAssert.Expect(LogType.Log, "LogD");
+            LogAssert.Expect(LogType.Log, "LogG");
+
+            planner.Dispose();
+        }
     }
 }
