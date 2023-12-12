@@ -34,10 +34,7 @@ namespace Tests
             planner.ExecutionType = PlannerExecutionType.RunUntilSuccess;
             planner.Begin();
 
-            while (planner.IsRunning)
-            {
-                planner.Tick();
-            }
+            while (planner.Tick()) { }
 
             Assert.AreEqual(3, contextValue);
             planner.Dispose();
@@ -68,10 +65,8 @@ namespace Tests
 
             planner.Begin();
 
-            while (planner.IsRunning)
+            while (planner.Tick())
             {
-                planner.Tick();
-
                 tickCount++;
                 if (tickCount == 1)
                 {
@@ -110,17 +105,14 @@ namespace Tests
             planner.ExecutionType = PlannerExecutionType.RunUntilSuccess;
             planner.Begin();
 
-            var count = 0;
-
-            while (planner.IsRunning)
+            var tickCount = 0;
+            while (planner.Tick())
             {
-                count++;
-                if (count >= 3)
+                tickCount++;
+                if (tickCount >= 2)
                 {
                     worldState.SetInt(TestState.A, 1);
                 }
-
-                planner.Tick();
             }
 
             LogAssert.Expect(LogType.Log, "LogB");
@@ -166,20 +158,18 @@ namespace Tests
             planner.ExecutionType = PlannerExecutionType.RunUntilSuccess;
             planner.Begin();
 
-            var count = 0;
-            while (planner.IsRunning)
+            var tickCount = 0;
+            while (planner.Tick())
             {
-                count++;
-                if (count >= 4)
+                tickCount++;
+                if (tickCount >= 3)
                 {
                     worldState.SetInt(TestState.A, 2);
                 }
-                else if (count >= 3)
+                else if (tickCount >= 2)
                 {
                     worldState.SetInt(TestState.A, 1);
                 }
-
-                planner.Tick();
             }
 
             LogAssert.Expect(LogType.Log, "LogE");
@@ -231,16 +221,14 @@ namespace Tests
             planner.ExecutionType = PlannerExecutionType.RunUntilSuccess;
             planner.Begin();
 
-            var count = 0;
-            while (planner.IsRunning && count < 100)
+            var tickCount = 0;
+            while (planner.Tick())
             {
-                count++;
-                if (count >= 5)
+                tickCount++;
+                if (tickCount >= 4)
                 {
                     worldState.SetInt(TestState.A, 1);
                 }
-
-                planner.Tick();
             }
 
             LogAssert.Expect(LogType.Log, "LogA");
