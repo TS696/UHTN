@@ -95,8 +95,8 @@ namespace Tests
             while (planRunner.State == PlanRunner.RunnerState.Running)
             {
                 planRunner.Tick();
-                worldState.SetInt(TestState.A,1);
-                worldState.SetInt(TestState.A,0);
+                worldState.SetInt(TestState.A, 1);
+                worldState.SetInt(TestState.A, 0);
             }
 
             Assert.AreEqual(3, contextValue);
