@@ -28,12 +28,7 @@ namespace Tests
             var planRunner = new PlanRunner();
             planRunner.Begin(domain, plan, worldState);
 
-            while (planRunner.State == PlanRunner.RunnerState.Running)
-            {
-                planRunner.Tick();
-            }
-
-            Assert.AreEqual(planRunner.State, PlanRunner.RunnerState.Success);
+            Assert.AreEqual(PlanRunner.RunnerState.Success, planRunner.State);
             domain.Dispose();
         }
 
@@ -64,8 +59,8 @@ namespace Tests
                 planRunner.Tick();
             }
 
-            Assert.AreEqual(contextValue, 3);
-            Assert.AreEqual(planRunner.State, PlanRunner.RunnerState.Success);
+            Assert.AreEqual(3, contextValue);
+            Assert.AreEqual(PlanRunner.RunnerState.Success, planRunner.State);
 
             domain.Dispose();
         }
@@ -99,7 +94,7 @@ namespace Tests
                 worldState.SetInt(TestState.A, 0);
             }
 
-            Assert.AreEqual(3, contextValue);
+            Assert.AreEqual(contextValue, 3);
             Assert.AreEqual(PlanRunner.RunnerState.Success, planRunner.State);
 
             domain.Dispose();
@@ -127,7 +122,7 @@ namespace Tests
                 planRunner.Tick();
             }
 
-            Assert.AreEqual(planRunner.State, PlanRunner.RunnerState.Failed);
+            Assert.AreEqual(PlanRunner.RunnerState.Failed, planRunner.State);
             domain.Dispose();
         }
 
@@ -161,7 +156,7 @@ namespace Tests
                 }
             }
 
-            Assert.AreEqual(planRunner.State, PlanRunner.RunnerState.Failed);
+            Assert.AreEqual(PlanRunner.RunnerState.Failed, planRunner.State);
             domain.Dispose();
         }
 

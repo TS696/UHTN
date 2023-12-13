@@ -119,11 +119,6 @@ namespace UHTN
 
         public bool Tick()
         {
-            if (_planRequest.HasRequest)
-            {
-                CompletePlanRequest();
-            }
-
             if (!IsRunning)
             {
                 return false;
@@ -133,6 +128,20 @@ namespace UHTN
             {
                 OnWorldStateChanged();
                 _isWorldStateDirty = false;
+            }
+
+            if (_planRequest.HasRequest)
+            {
+                CompletePlanRequest();
+            }
+            else if (_planRunner.State == PlanRunner.RunnerState.None)
+            {
+                RequestPlanAndComplete(PlanRequestType.Begin);
+            }
+
+            if (_planRunner.State == PlanRunner.RunnerState.Running)
+            {
+                _planRunner.Tick();
             }
 
             switch (_planRunner.State)
@@ -151,18 +160,18 @@ namespace UHTN
                     break;
             }
 
-
-            if (_planRunner.State == PlanRunner.RunnerState.Running)
-            {
-                _planRunner.Tick();
-            }
-
             return true;
         }
 
         private void RequestPlan(PlanRequestType requestType, int targetTaskIndex = 0, int processIndex = 0)
         {
             _planRequest.Request(requestType, PlannerCore.Plan(_domain, _worldState, targetTaskIndex), processIndex);
+        }
+
+        private void RequestPlanAndComplete(PlanRequestType requestType, int targetTaskIndex = 0, int processIndex = 0)
+        {
+            RequestPlan(requestType, targetTaskIndex, processIndex);
+            CompletePlanRequest();
         }
 
         private void CompletePlanRequest()
@@ -182,6 +191,18 @@ namespace UHTN
                 return;
             }
 
+            if (_planRequest.RequestType == PlanRequestType.ReplaceAndResume)
+            {
+                var processIndex = _planRequest.ProcessIndex - 1;
+                if (processIndex >= 0)
+                {
+                    var process = _planRunner.Processes[processIndex];
+                    RequestPlanAndComplete(PlanRequestType.ReplaceAndResume, process.Plan.TargetTaskIndex,
+                        processIndex);
+                    return;
+                }
+            }
+
             _planRunner.Stop();
         }
 
@@ -196,7 +217,7 @@ namespace UHTN
             var process = _planRunner.Processes[index];
             var plan = process.Plan;
 
-            RequestPlan(PlanRequestType.ReplaceAndResume, plan.TargetTaskIndex, index);
+            RequestPlanAndComplete(PlanRequestType.ReplaceAndResume, plan.TargetTaskIndex, index);
         }
 
         private void OnWorldStateChanged()
@@ -222,6 +243,7 @@ namespace UHTN
                 var plan = process.Plan;
                 if (!PlannerCore.PlanImmediate(_domain, _worldState, out var newPlan, plan.TargetTaskIndex))
                 {
+                    _planRunner.Stop();
                     return;
                 }
 
