@@ -34,9 +34,14 @@ namespace Tests
             planner.ExecutionType = PlannerExecutionType.RunUntilSuccess;
             planner.Begin();
 
-            while (planner.Tick()) { }
+            var tickCount = 0;
+            while (planner.Tick())
+            {
+                tickCount++;
+            }
 
             Assert.AreEqual(3, contextValue);
+            Assert.AreEqual(2, tickCount);
             planner.Dispose();
         }
 
@@ -52,32 +57,28 @@ namespace Tests
                         ),
                     builder.Method()
                         .SubTasks(
-                            builder.Primitive().Operator(() => Debug.Log("Method2")),
+                            builder.Primitive().Effect(TestState.A, StateEffect.Assign(1)).Operator(() => Debug.Log("Method2")),
                             builder.Primitive().Operator(() => OperatorState.Failed)
                         )
                 );
 
             var (domain, worldState) = builder.Resolve();
             var planner = new Planner(domain, worldState);
-            var tickCount = 0;
 
             planner.ExecutionType = PlannerExecutionType.RunUntilSuccess;
-
             planner.Begin();
 
+            var tickCount = 0;
             while (planner.Tick())
             {
                 tickCount++;
-                if (tickCount == 1)
-                {
-                    worldState.SetValue((int)TestState.A, 1);
-                }
             }
             
             planner.Dispose();
 
             LogAssert.Expect(LogType.Log, "Method2");
             LogAssert.Expect(LogType.Log, "Method1");
+            Assert.AreEqual(2, tickCount);
         }
 
         [Test]
