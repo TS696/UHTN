@@ -125,8 +125,7 @@ namespace UHTN
             }
             else if (_planRunner.State == PlanRunner.RunnerState.None)
             {
-                RequestPlan(PlanRequestType.Begin);
-                CompletePlanRequest();
+                RequestPlanAndComplete(PlanRequestType.Begin);
             }
 
             if (!IsRunning)
@@ -169,6 +168,12 @@ namespace UHTN
             _planRequest.Request(requestType, PlannerCore.Plan(_domain, _worldState, targetTaskIndex), processIndex);
         }
 
+        private void RequestPlanAndComplete(PlanRequestType requestType, int targetTaskIndex = 0, int processIndex = 0)
+        {
+            RequestPlan(requestType, targetTaskIndex, processIndex);
+            CompletePlanRequest();
+        }
+
         private void CompletePlanRequest()
         {
             if (_planRequest.Complete(out var plan))
@@ -192,8 +197,7 @@ namespace UHTN
                 if (processIndex >= 0)
                 {
                     var process = _planRunner.Processes[processIndex];
-                    RequestPlan(PlanRequestType.ReplaceAndResume, process.Plan.TargetTaskIndex, processIndex);
-                    CompletePlanRequest();
+                    RequestPlanAndComplete(PlanRequestType.ReplaceAndResume, process.Plan.TargetTaskIndex, processIndex);
                     return;
                 }
             }
