@@ -140,6 +140,11 @@ namespace UHTN
                 _isWorldStateDirty = false;
             }
 
+            if (_planRunner.State == PlanRunner.RunnerState.Running)
+            {
+                _planRunner.Tick();
+            }
+
             switch (_planRunner.State)
             {
                 case PlanRunner.RunnerState.Success:
@@ -154,12 +159,6 @@ namespace UHTN
                 case PlanRunner.RunnerState.Failed:
                     OnFailed();
                     break;
-            }
-
-
-            if (_planRunner.State == PlanRunner.RunnerState.Running)
-            {
-                _planRunner.Tick();
             }
 
             return true;
