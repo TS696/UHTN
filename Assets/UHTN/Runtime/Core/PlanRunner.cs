@@ -38,7 +38,7 @@ namespace UHTN
         public RunnerState State => _state;
         private RunnerState _state;
 
-        private IOperator _currentOperator;
+        private IPrimitiveTask _currentTask;
 
         public WorldState WorldState => _worldState;
         private WorldState _worldState;
@@ -176,15 +176,16 @@ namespace UHTN
 
         private RunnerState TickOperator()
         {
-            if (_currentOperator == null)
+            if (_currentTask == null)
             {
                 var crProcess = _processList[^1];
                 var nextTask = (IPrimitiveTask)_domain.GetTask(crProcess.Plan.Tasks[crProcess.OperationIndex]);
-                _currentOperator = nextTask.Operator;
-                _currentOperator?.Begin();
+                _currentTask = nextTask;
+                _currentTask?.OnPreExecute();
+                _currentTask?.Operator?.Begin();
             }
 
-            var operatorState = _currentOperator?.Tick();
+            var operatorState = _currentTask?.Operator?.Tick();
             switch (operatorState)
             {
                 case OperatorState.Running:
@@ -209,8 +210,9 @@ namespace UHTN
 
         private void StopCurrentOperation()
         {
-            _currentOperator?.End();
-            _currentOperator = null;
+            _currentTask?.Operator?.End();
+            _currentTask?.OnPostExecute();
+            _currentTask = null;
         }
 
         private (bool, int) CheckCondition(WorldState worldState)

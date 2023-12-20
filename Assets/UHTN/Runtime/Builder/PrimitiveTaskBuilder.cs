@@ -45,5 +45,17 @@ namespace UHTN.Builder
             _primitiveTask.SetOperator(op);
             return this;
         }
+
+        public PrimitiveTaskBuilder<T> PreExecute(Action action)
+        {
+            _primitiveTask.PreExecute += action;
+            return this;
+        }
+
+        public PrimitiveTaskBuilder<T> PostExecute(Action action)
+        {
+            _primitiveTask.PostExecute += action;
+            return this;
+        }
     }
 }
