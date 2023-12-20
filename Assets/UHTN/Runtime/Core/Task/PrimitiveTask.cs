@@ -1,3 +1,5 @@
+using System;
+
 namespace UHTN
 {
     public class PrimitiveTask : IPrimitiveTask
@@ -7,6 +9,8 @@ namespace UHTN
         public StateCondition[] PreConditions { get; }
         public StateEffect[] Effects { get; }
         public IOperator Operator { get; private set; }
+        public Action PreExecute { get; set; }
+        public Action PostExecute { get; set; }
 
         public PrimitiveTask(string name, int stateLength)
         {
@@ -23,6 +27,16 @@ namespace UHTN
 
         public PrimitiveTask(int stateLength) : this("", stateLength)
         {
+        }
+
+        void IPrimitiveTask.OnPreExecute()
+        {
+            PreExecute?.Invoke();
+        }
+
+        void IPrimitiveTask.OnPostExecute()
+        {
+            PostExecute?.Invoke();
         }
 
         public void SetOperator(IOperator op)

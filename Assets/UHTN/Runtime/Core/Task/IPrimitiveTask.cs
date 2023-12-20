@@ -5,5 +5,7 @@
         StateCondition[] PreConditions { get; }
         StateEffect[] Effects { get; }
         IOperator Operator { get; }
+        void OnPreExecute();
+        void OnPostExecute();
     }
 }
