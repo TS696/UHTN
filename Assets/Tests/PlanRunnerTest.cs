@@ -66,6 +66,47 @@ namespace Tests
         }
 
         [Test]
+        public void PrePostEventTest()
+        {
+            var builder = DomainBuilder<TestState>.Create();
+
+            builder.Root
+                .Methods(
+                    builder.Method()
+                        .SubTasks(
+                            builder.Primitive()
+                                .PreExecute(() => Debug.Log("PreExecute1"))
+                                .Operator(() => Debug.Log("Operator1"))
+                                .PostExecute(() => Debug.Log("PostExecute1")),
+                            builder.Primitive()
+                                .PreExecute(() => Debug.Log("PreExecute2"))
+                                .Operator(() => Debug.Log("Operator2"))
+                                .PostExecute(() => Debug.Log("PostExecute2"))
+                        )
+                );
+
+            var (domain, worldState) = builder.Resolve();
+            Assert.IsTrue(PlannerCore.PlanImmediate(domain, worldState, out var plan));
+
+            var planRunner = new PlanRunner();
+            planRunner.Begin(domain, plan, worldState);
+
+            while (planRunner.State == PlanRunner.RunnerState.Running)
+            {
+                planRunner.Tick();
+            }
+
+            LogAssert.Expect(LogType.Log, "PreExecute1");
+            LogAssert.Expect(LogType.Log, "Operator1");
+            LogAssert.Expect(LogType.Log, "PostExecute1");
+            LogAssert.Expect(LogType.Log, "PreExecute2");
+            LogAssert.Expect(LogType.Log, "Operator2");
+            LogAssert.Expect(LogType.Log, "PostExecute2");
+
+            domain.Dispose();
+        }
+
+        [Test]
         public void WorldStateDirtyTest()
         {
             var builder = DomainBuilder<TestState>.Create();
