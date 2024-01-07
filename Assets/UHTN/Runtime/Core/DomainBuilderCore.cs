@@ -20,6 +20,11 @@ namespace UHTN
             _tasks.Add(task);
         }
 
+        public bool ContainsTask(ITask task)
+        {
+            return _taskIndexDictionary.ContainsKey(task);
+        }
+
         private int GetTaskIndex(ITask task)
         {
             return _taskIndexDictionary[task];
