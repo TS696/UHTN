@@ -10,7 +10,7 @@ This library introduces the JobSystem for task decomposition processing, enablin
 ## Installation
 Add the following line directly to `Packages/manifest.json`:
 ```json
-"com.ts696.uhtn": "https://github.com/TS696/uhtn.git?path=Assets/UHTN#0.0.5"
+"com.ts696.uhtn": "https://github.com/TS696/uhtn.git?path=Assets/UHTN#0.0.6"
 ```
 
 ## Basic Usage
