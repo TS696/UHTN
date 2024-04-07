@@ -181,16 +181,25 @@ namespace UHTN
                 {
                     if (IsValidCondition(worldState, methodIndex, MethodPreconditions))
                     {
-                        methodTraversalRecord.Add(methodIndex);
                         var cloneState = CloneWorldState(worldState);
-                        if (DecomposeMethod(methodIndex, decomposedTasks, methodTraversalRecord, worldState))
+                        var subMethodTraversalRecord = new NativeList<int>(Allocator.Temp);
+                        var subDecomposedTasks = new NativeList<int>(Allocator.Temp);
+                        if (DecomposeMethod(methodIndex, subDecomposedTasks, subMethodTraversalRecord, worldState))
                         {
+                            methodTraversalRecord.Add(methodIndex);
+                            methodTraversalRecord.AddRange(subMethodTraversalRecord);
+                            decomposedTasks.AddRange(subDecomposedTasks);
+
                             cloneState.Dispose();
+                            subMethodTraversalRecord.Dispose();
+                            subDecomposedTasks.Dispose();
                             return true;
                         }
 
                         worldState.Dispose();
                         worldState = cloneState;
+                        subMethodTraversalRecord.Dispose();
+                        subDecomposedTasks.Dispose();
                     }
                 }
 
@@ -201,15 +210,12 @@ namespace UHTN
                 NativeList<int> methodTraversalRecord, NativeArray<int> worldState)
             {
                 var success = true;
-
-                var subDecomposedTasks = new NativeList<int>(Allocator.Temp);
-                var subMethodTraversalRecord = new NativeList<int>(Allocator.Temp);
                 var range = MethodSubTaskIndices[methodIndex];
 
                 for (var i = range.Start; i < range.End; i++)
                 {
                     var subTask = MethodSubTasks[i];
-                    if (!DecomposeTask(subTask.TaskIndex, subDecomposedTasks, subMethodTraversalRecord, worldState))
+                    if (!DecomposeTask(subTask.TaskIndex, decomposedTasks, methodTraversalRecord, worldState))
                     {
                         success = false;
                         break;
@@ -217,11 +223,6 @@ namespace UHTN
 
                     ApplyTask(subTask.TaskIndex, worldState);
                 }
-
-                decomposedTasks.AddRange(subDecomposedTasks.AsArray());
-                methodTraversalRecord.AddRange(subMethodTraversalRecord.AsArray());
-                subDecomposedTasks.Dispose();
-                subMethodTraversalRecord.Dispose();
 
                 return success;
             }

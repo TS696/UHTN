@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using System.Linq;
 using UHTN;
 using UHTN.Builder;
 
@@ -90,8 +91,10 @@ namespace Tests
             domain.Dispose();
         }
 
-        [Test]
-        public void MethodTraversalRecordTest()
+        [TestCase(0, 0, 0, 1, 2)]
+        [TestCase(1, 0, 1, 2)]
+        [TestCase(2, 1, 2)]
+        public void MethodTraversalRecordTest(int initialStateA, int initialStateB, params int[] expectMtr)
         {
             var builder = DomainBuilder<TestState>.Create();
             builder.Root.Methods(
@@ -114,11 +117,52 @@ namespace Tests
             );
 
             var (domain, worldState) = builder.Resolve();
+            worldState.SetInt(TestState.A, initialStateA);
+            worldState.SetInt(TestState.B, initialStateB);
             PlannerCore.PlanImmediate(domain, worldState, out var plan);
             var mtr = plan.MethodTraversalRecord;
-            Assert.AreEqual(0, mtr[0]);
-            Assert.AreEqual(1, mtr[1]);
-            Assert.AreEqual(2, mtr[2]);
+            Assert.True(mtr.SequenceEqual(expectMtr));
+
+            domain.Dispose();
+        }
+
+        [TestCase(0, 0, 0, 1, 2)]
+        [TestCase(1, 0, 1, 2)]
+        [TestCase(2, 1, 2)]
+        public void MethodTraversalRecordTest2(int initialStateA, int initialStateB, params int[] expectMtr)
+        {
+            var builder = DomainBuilder<TestState>.Create();
+            builder.Root.Methods(
+                builder.Method()
+                    .SubTasks(
+                        builder.Primitive()
+                            .Precondition(TestState.A, StateCondition.Equal(0))
+                            .Effect(TestState.A, StateEffect.Add(1)),
+                        builder.Root
+                    ),
+                builder.Method()
+                    .SubTasks(
+                        builder.Primitive()
+                            .Precondition(TestState.A, StateCondition.Equal(1))
+                            .Effect(TestState.A, StateEffect.Add(1)),
+                        builder.Primitive().Effect(TestState.B, StateEffect.Add(1)),
+                        builder.Root
+                    ),
+                builder.Method()
+                    .SubTasks(
+                        builder.Primitive()
+                            .Precondition(TestState.B, StateCondition.Equal(1))
+                            .Effect(TestState.B, StateEffect.Add(1)),
+                        builder.Primitive().Effect(TestState.C, StateEffect.Add(1))
+                    )
+            );
+
+            var (domain, worldState) = builder.Resolve();
+            worldState.SetInt(TestState.A, initialStateA);
+            worldState.SetInt(TestState.B, initialStateB);
+            PlannerCore.PlanImmediate(domain, worldState, out var plan);
+            var mtr = plan.MethodTraversalRecord;
+            Assert.True(mtr.SequenceEqual(expectMtr));
 
             domain.Dispose();
         }
