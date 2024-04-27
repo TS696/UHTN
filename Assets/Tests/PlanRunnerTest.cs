@@ -23,10 +23,10 @@ namespace Tests
                 );
 
             var (domain, worldState) = builder.Resolve();
-            Assert.IsTrue(PlannerCore.PlanImmediate(domain, worldState, out var plan));
+            Assert.IsTrue(PlannerCore.PlanImmediate(domain, worldState.Value, out var plan));
 
             var planRunner = new PlanRunner();
-            planRunner.Begin(domain, plan, worldState);
+            planRunner.Begin(domain, plan, worldState.Value);
 
             Assert.AreEqual(PlanRunner.RunnerState.Success, planRunner.State);
             domain.Dispose();
@@ -49,10 +49,10 @@ namespace Tests
                 );
 
             var (domain, worldState) = builder.Resolve();
-            Assert.IsTrue(PlannerCore.PlanImmediate(domain, worldState, out var plan));
+            Assert.IsTrue(PlannerCore.PlanImmediate(domain, worldState.Value, out var plan));
 
             var planRunner = new PlanRunner();
-            planRunner.Begin(domain, plan, worldState);
+            planRunner.Begin(domain, plan, worldState.Value);
 
             while (planRunner.State == PlanRunner.RunnerState.Running)
             {
@@ -86,10 +86,10 @@ namespace Tests
                 );
 
             var (domain, worldState) = builder.Resolve();
-            Assert.IsTrue(PlannerCore.PlanImmediate(domain, worldState, out var plan));
+            Assert.IsTrue(PlannerCore.PlanImmediate(domain, worldState.Value, out var plan));
 
             var planRunner = new PlanRunner();
-            planRunner.Begin(domain, plan, worldState);
+            planRunner.Begin(domain, plan, worldState.Value);
 
             while (planRunner.State == PlanRunner.RunnerState.Running)
             {
@@ -123,10 +123,10 @@ namespace Tests
                 );
 
             var (domain, worldState) = builder.Resolve();
-            Assert.IsTrue(PlannerCore.PlanImmediate(domain, worldState, out var plan));
+            Assert.IsTrue(PlannerCore.PlanImmediate(domain, worldState.Value, out var plan));
 
             var planRunner = new PlanRunner();
-            planRunner.Begin(domain, plan, worldState);
+            planRunner.Begin(domain, plan, worldState.Value);
 
             while (planRunner.State == PlanRunner.RunnerState.Running)
             {
@@ -155,9 +155,9 @@ namespace Tests
             );
 
             var (domain, worldState) = builder.Resolve();
-            Assert.IsTrue(PlannerCore.PlanImmediate(domain, worldState, out var plan));
+            Assert.IsTrue(PlannerCore.PlanImmediate(domain, worldState.Value, out var plan));
             var planRunner = new PlanRunner();
-            planRunner.Begin(domain, plan, worldState);
+            planRunner.Begin(domain, plan, worldState.Value);
             while (planRunner.State == PlanRunner.RunnerState.Running)
             {
                 planRunner.Tick();
@@ -182,9 +182,9 @@ namespace Tests
             );
 
             var (domain, worldState) = builder.Resolve();
-            Assert.IsTrue(PlannerCore.PlanImmediate(domain, worldState, out var plan));
+            Assert.IsTrue(PlannerCore.PlanImmediate(domain, worldState.Value, out var plan));
             var planRunner = new PlanRunner();
-            planRunner.Begin(domain, plan, worldState);
+            planRunner.Begin(domain, plan, worldState.Value);
             var count = 0;
             while (planRunner.State == PlanRunner.RunnerState.Running)
             {
@@ -193,7 +193,7 @@ namespace Tests
 
                 if (count == 1)
                 {
-                    worldState.SetValue((int)TestState.A, 1);
+                    worldState.SetInt((int)TestState.A, 1);
                 }
             }
 
@@ -219,11 +219,11 @@ namespace Tests
             );
 
             var (domain, worldState) = builder.Resolve();
-            Assert.IsTrue(PlannerCore.PlanImmediate(domain, worldState, out var plan));
+            Assert.IsTrue(PlannerCore.PlanImmediate(domain, worldState.Value, out var plan));
             Assert.AreEqual(3, plan.Tasks.Length);
 
             var planRunner = new PlanRunner();
-            planRunner.Begin(domain, plan, worldState);
+            planRunner.Begin(domain, plan, worldState.Value);
 
             while (planRunner.State == PlanRunner.RunnerState.Running)
             {
@@ -252,11 +252,11 @@ namespace Tests
             );
 
             var (domain, worldState) = builder.Resolve();
-            Assert.IsTrue(PlannerCore.PlanImmediate(domain, worldState, out var plan));
+            Assert.IsTrue(PlannerCore.PlanImmediate(domain, worldState.Value, out var plan));
             Assert.AreEqual(1, plan.Tasks.Length);
 
             var planRunner = new PlanRunner();
-            planRunner.Begin(domain, plan, worldState);
+            planRunner.Begin(domain, plan, worldState.Value);
 
             while (planRunner.State == PlanRunner.RunnerState.Running)
             {
@@ -287,11 +287,11 @@ namespace Tests
             );
 
             var (domain, worldState) = builder.Resolve();
-            Assert.IsTrue(PlannerCore.PlanImmediate(domain, worldState, out var plan));
+            Assert.IsTrue(PlannerCore.PlanImmediate(domain, worldState.Value, out var plan));
             Assert.AreEqual(2, plan.Tasks.Length);
 
             var planRunner = new PlanRunner();
-            planRunner.Begin(domain, plan, worldState);
+            planRunner.Begin(domain, plan, worldState.Value);
 
             while (planRunner.State == PlanRunner.RunnerState.Running)
             {
@@ -318,11 +318,11 @@ namespace Tests
             );
 
             var (domain, worldState) = builder.Resolve();
-            Assert.IsTrue(PlannerCore.PlanImmediate(domain, worldState, out var plan));
+            Assert.IsTrue(PlannerCore.PlanImmediate(domain, worldState.Value, out var plan));
             Assert.AreEqual(1, plan.Tasks.Length);
 
             var planRunner = new PlanRunner();
-            planRunner.Begin(domain, plan, worldState);
+            planRunner.Begin(domain, plan, worldState.Value);
             while (planRunner.State == PlanRunner.RunnerState.Running)
             {
                 planRunner.Tick();
@@ -348,11 +348,11 @@ namespace Tests
             );
 
             var (domain, worldState) = builder.Resolve();
-            Assert.IsTrue(PlannerCore.PlanImmediate(domain, worldState, out var plan));
+            Assert.IsTrue(PlannerCore.PlanImmediate(domain, worldState.Value, out var plan));
             Assert.AreEqual(2, plan.Tasks.Length);
 
             var planRunner = new PlanRunner();
-            planRunner.Begin(domain, plan, worldState);
+            planRunner.Begin(domain, plan, worldState.Value);
 
             while (planRunner.State == PlanRunner.RunnerState.Running)
             {

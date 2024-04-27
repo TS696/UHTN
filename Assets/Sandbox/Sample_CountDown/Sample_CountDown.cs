@@ -43,7 +43,7 @@ namespace Sandbox
                 );
 
             var (domain, worldState) = builder.Resolve();
-            _planner = new Planner(domain, worldState);
+            _planner = new Planner(domain, worldState.Value);
             _planner.ExecutionType = PlannerExecutionType.RunUntilSuccess;
 
             worldState.SetInt(WorldState.Count, _count);

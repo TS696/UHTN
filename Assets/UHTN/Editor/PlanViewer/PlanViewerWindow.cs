@@ -207,7 +207,7 @@ namespace UHTN.Editor.PlanViewer
 
         private static void DrawTask(PlanRunner planRunner, ITask task, GUILayoutOption width)
         {
-            var worldStateDesc = planRunner.Domain.WorldStateDesc;
+            var worldStateDesc = planRunner.WorldState.Description;
             switch (task)
             {
                 case IPrimitiveTask primitiveTask:

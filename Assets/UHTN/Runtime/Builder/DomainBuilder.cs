@@ -82,7 +82,7 @@ namespace UHTN.Builder
         public (Domain, EnumWorldState<T>) Resolve()
         {
             var domain = _builder.Resolve();
-            return (domain, new EnumWorldState<T>(_worldStateDescription));
+            return (domain, new EnumWorldState<T>(domain.CreateWorldState()));
         }
     }
 }

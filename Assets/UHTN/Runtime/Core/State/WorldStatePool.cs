@@ -14,7 +14,7 @@ namespace UHTN
                 return stack.Pop();
             }
 
-            return description.CreateWorldState();
+            return new WorldState(description);
         }
 
         public void Return(WorldState state)

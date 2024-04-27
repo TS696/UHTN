@@ -18,7 +18,7 @@ namespace UHTN
         public event Action<DirtyReason> OnValueChanged;
         public WorldStateDescription Description { get; }
 
-        public WorldState(WorldStateDescription description)
+        internal WorldState(WorldStateDescription description)
         {
             _values = new int[description.StateLength];
             Description = description;

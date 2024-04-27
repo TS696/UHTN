@@ -3,30 +3,33 @@ using System.Reflection;
 
 namespace UHTN.Builder
 {
-    public class EnumWorldState<T> : WorldState where T : Enum
+    public class EnumWorldState<T> where T : Enum
     {
-        public EnumWorldState(WorldStateDescription description) : base(description)
+        public WorldState Value { get; }
+
+        public EnumWorldState(WorldState value)
         {
+            Value = value;
         }
 
         public void SetInt(T state, int value)
         {
-            SetValue((int)(object)state, value);
+            Value.SetValue((int)(object)state, value);
         }
 
         public void SetBool(T state, bool value)
         {
-            SetValue((int)(object)state, value ? 1 : 0);
+            Value.SetValue((int)(object)state, value ? 1 : 0);
         }
 
         public void SetEnum<TU>(T state, TU value) where TU : Enum
         {
-            SetValue((int)(object)state, (int)(object)value);
+            Value.SetValue((int)(object)state, (int)(object)value);
         }
 
         public int GetInt(T state)
         {
-            return Values[(int)(object)state];
+            return Value.Values[(int)(object)state];
         }
 
         public TU GetEnum<TU>(T state) where TU : Enum
