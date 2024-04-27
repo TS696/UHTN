@@ -198,8 +198,9 @@ namespace UHTN.Editor.PlanViewer
             EditorGUI.indentLevel++;
             for (var i = 0; i < worldStateDesc.StateLength; i++)
             {
-                EditorGUILayout.LabelField($"{worldStateDesc.GetStateName(i)} : {worldState.Values[i]}",
-                    width);
+                var stateName = worldStateDesc.GetStateName(i);
+                var valueString = worldStateDesc.GetStateType(i).ToDisplayString(worldState.Values[i]);
+                EditorGUILayout.LabelField($"{stateName} : {valueString}", width);
             }
 
             EditorGUI.indentLevel--;

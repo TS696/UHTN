@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 
 namespace UHTN.Builder
 {
@@ -36,6 +37,28 @@ namespace UHTN.Builder
         public bool GetBool(T state)
         {
             return GetInt(state) != 0;
+        }
+
+        public static WorldStateDescription CreateDescription()
+        {
+            var names = Enum.GetNames(typeof(T));
+            var fieldDescList = new WorldStateDescription.FieldDesc[names.Length];
+
+            for (var i = 0; i < names.Length; i++)
+            {
+                IWsFieldType stateType = WsFieldInt.Instance;
+
+                var fieldInfo = typeof(T).GetField(names[i]);
+                var hint = fieldInfo.GetCustomAttribute<WsFieldHintAttribute>();
+                if (hint != null)
+                {
+                    stateType = (IWsFieldType)Activator.CreateInstance(hint.Type);
+                }
+
+                fieldDescList[i] = new WorldStateDescription.FieldDesc(names[i], stateType);
+            }
+
+            return new WorldStateDescription(fieldDescList);
         }
     }
 }

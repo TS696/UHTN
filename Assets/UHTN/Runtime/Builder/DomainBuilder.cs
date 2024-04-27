@@ -4,7 +4,7 @@ namespace UHTN.Builder
 {
     public class DomainBuilder<T> where T : Enum
     {
-        private readonly DomainBuilderCore _builder = new(WorldStateDescription.Create<T>());
+        private readonly DomainBuilderCore _builder = new(EnumWorldState<T>.CreateDescription());
         private readonly TaskBuildHelper<T> _helper = new();
 
         public CompoundTaskBuilder<T> Root => _root;
