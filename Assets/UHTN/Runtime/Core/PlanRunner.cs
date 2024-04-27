@@ -217,7 +217,7 @@ namespace UHTN
 
         private (bool, int) CheckCondition(WorldState worldState)
         {
-            var tempWorldState = worldStatePool.Rent(worldState.StateLength);
+            var tempWorldState = worldStatePool.Rent(worldState.Description);
             worldState.CopyTo(tempWorldState);
 
             for (var processIndex = _processList.Count - 1; processIndex >= 0; processIndex--)

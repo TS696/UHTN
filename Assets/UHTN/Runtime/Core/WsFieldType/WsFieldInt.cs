@@ -8,5 +8,10 @@ namespace UHTN
         {
             return value.ToString();
         }
+
+        public bool Validate(int value)
+        {
+            return true;
+        }
     }
 }

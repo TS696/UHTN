@@ -40,5 +40,10 @@ namespace UHTN
                 _fieldDescList[i] = new FieldDesc(stateNames[i], WsFieldInt.Instance);
             }
         }
+
+        public WorldState CreateWorldState()
+        {
+            return new WorldState(this);
+        }
     }
 }

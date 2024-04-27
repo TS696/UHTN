@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Unity.Collections;
 
 namespace UHTN
 {
-    public class WorldState : IEquatable<WorldState>
+    public class WorldState
     {
         public enum DirtyReason
         {
@@ -17,10 +16,12 @@ namespace UHTN
         public IReadOnlyList<int> Values => _values;
         public int StateLength => _values.Length;
         public event Action<DirtyReason> OnValueChanged;
+        public WorldStateDescription Description { get; }
 
-        public WorldState(int length)
+        public WorldState(WorldStateDescription description)
         {
-            _values = new int[length];
+            _values = new int[description.StateLength];
+            Description = description;
         }
 
         public NativeArray<int> ToNativeArray(Allocator allocator)
@@ -32,6 +33,12 @@ namespace UHTN
 
         public void SetValue(int index, int value, DirtyReason dirtyReason = DirtyReason.WorldChanged)
         {
+            if (!Description.GetStateType(index).Validate(value))
+            {
+                throw new ArgumentException(
+                    $"Invalid value '{value}' for the '{Description.GetStateName(index)}' state of the '{Description.GetStateType(index).GetType()}' type.");
+            }
+
             if (_values[index] != value)
             {
                 _values[index] = value;
@@ -42,46 +49,6 @@ namespace UHTN
         public void CopyTo(WorldState other)
         {
             Array.Copy(_values, other._values, _values.Length);
-        }
-
-        public bool Equals(WorldState other)
-        {
-            if (ReferenceEquals(null, other))
-            {
-                return false;
-            }
-
-            if (ReferenceEquals(this, other))
-            {
-                return true;
-            }
-
-            return _values.SequenceEqual(other._values);
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj))
-            {
-                return false;
-            }
-
-            if (ReferenceEquals(this, obj))
-            {
-                return true;
-            }
-
-            if (obj.GetType() != GetType())
-            {
-                return false;
-            }
-
-            return Equals((WorldState)obj);
-        }
-
-        public override int GetHashCode()
-        {
-            return _values != null ? _values.GetHashCode() : 0;
         }
     }
 }

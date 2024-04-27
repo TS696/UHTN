@@ -8,5 +8,10 @@ namespace UHTN
         {
             return Enum.GetName(typeof(T), value);
         }
+
+        public bool Validate(int value)
+        {
+            return Enum.IsDefined(typeof(T), value);
+        }
     }
 }

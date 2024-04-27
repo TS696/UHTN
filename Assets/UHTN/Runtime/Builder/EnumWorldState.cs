@@ -5,7 +5,7 @@ namespace UHTN.Builder
 {
     public class EnumWorldState<T> : WorldState where T : Enum
     {
-        public EnumWorldState(int stateLength) : base(stateLength)
+        public EnumWorldState(WorldStateDescription description) : base(description)
         {
         }
 

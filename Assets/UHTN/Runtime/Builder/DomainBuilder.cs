@@ -4,14 +4,18 @@ namespace UHTN.Builder
 {
     public class DomainBuilder<T> where T : Enum
     {
-        private readonly DomainBuilderCore _builder = new(EnumWorldState<T>.CreateDescription());
+        private readonly DomainBuilderCore _builder;
         private readonly TaskBuildHelper<T> _helper = new();
 
         public CompoundTaskBuilder<T> Root => _root;
         private CompoundTaskBuilder<T> _root;
 
+        private readonly WorldStateDescription _worldStateDescription;
+
         private DomainBuilder()
         {
+            _worldStateDescription = EnumWorldState<T>.CreateDescription();
+            _builder = new DomainBuilderCore(_worldStateDescription);
         }
 
         public static DomainBuilder<T> Create()
@@ -78,7 +82,7 @@ namespace UHTN.Builder
         public (Domain, EnumWorldState<T>) Resolve()
         {
             var domain = _builder.Resolve();
-            return (domain, new EnumWorldState<T>(domain.StateLength));
+            return (domain, new EnumWorldState<T>(_worldStateDescription));
         }
     }
 }

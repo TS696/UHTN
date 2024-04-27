@@ -192,14 +192,13 @@ namespace UHTN.Editor.PlanViewer
         {
             EditorGUILayout.LabelField("WorldState", width);
 
-            var worldStateDesc = planRunner.Domain.WorldStateDesc;
             var worldState = planRunner.WorldState;
 
             EditorGUI.indentLevel++;
-            for (var i = 0; i < worldStateDesc.StateLength; i++)
+            for (var i = 0; i < worldState.StateLength; i++)
             {
-                var stateName = worldStateDesc.GetStateName(i);
-                var valueString = worldStateDesc.GetStateType(i).ToDisplayString(worldState.Values[i]);
+                var stateName = worldState.Description.GetStateName(i);
+                var valueString = worldState.Description.GetStateType(i).ToDisplayString(worldState.Values[i]);
                 EditorGUILayout.LabelField($"{stateName} : {valueString}", width);
             }
 
