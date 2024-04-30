@@ -35,7 +35,7 @@ namespace UHTN
         {
             if (!Description.GetStateType(index).Validate(value))
             {
-                throw new ArgumentException(
+                throw new ArgumentOutOfRangeException(
                     $"Invalid value '{value}' for the '{Description.GetStateName(index)}' state of the '{Description.GetStateType(index).GetType()}' type.");
             }
 
