@@ -36,7 +36,7 @@ namespace UHTN
 
         public WorldState CreateWorldState()
         {
-            return new WorldState(_worldStateDescription);
+            return _worldStateDescription.CreateWorldState();
         }
 
         public void Dispose()

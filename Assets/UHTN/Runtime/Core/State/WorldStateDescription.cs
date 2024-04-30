@@ -1,3 +1,5 @@
+using System;
+
 namespace UHTN
 {
     public class WorldStateDescription
@@ -22,6 +24,11 @@ namespace UHTN
             return _fieldDescList[index].Name;
         }
 
+        public int GetStateIndex(string name)
+        {
+            return Array.FindIndex(_fieldDescList, x => x.Name == name);
+        }
+
         public IWsFieldType GetStateType(int index)
         {
             return _fieldDescList[index].Type;
@@ -30,6 +37,11 @@ namespace UHTN
         public WorldStateDescription(FieldDesc[] fieldDescList)
         {
             _fieldDescList = fieldDescList;
+        }
+
+        public WorldState CreateWorldState()
+        {
+            return new WorldState(this);
         }
 
         public WorldStateDescription(string[] stateNames)
