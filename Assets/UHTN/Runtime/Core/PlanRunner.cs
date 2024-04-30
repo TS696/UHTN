@@ -357,6 +357,7 @@ namespace UHTN
                     var partialPlanIndex = plan.PartialPlans.FindIndex(x => x.Item1 == i);
                     if (partialPlanIndex < 0)
                     {
+                        yield return (compoundTask, depth, isCompleted);
                         continue;
                     }
 
