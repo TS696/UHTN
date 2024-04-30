@@ -187,8 +187,8 @@ namespace UHTN
                         if (DecomposeMethod(methodIndex, subDecomposedTasks, subMethodTraversalRecord, worldState))
                         {
                             methodTraversalRecord.Add(methodIndex);
-                            methodTraversalRecord.AddRange(subMethodTraversalRecord);
-                            decomposedTasks.AddRange(subDecomposedTasks);
+                            methodTraversalRecord.AddRange(subMethodTraversalRecord.AsArray());
+                            decomposedTasks.AddRange(subDecomposedTasks.AsArray());
 
                             cloneState.Dispose();
                             subMethodTraversalRecord.Dispose();

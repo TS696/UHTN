@@ -125,7 +125,7 @@ namespace UHTN.Editor.PlanViewer
 
                 _useAutoReload = GUILayout.Toggle(_useAutoReload, "AutoReload");
             }
-            
+
             if (Event.current.type == EventType.Repaint)
             {
                 _headerHeight = GUILayoutUtility.GetLastRect().height + 5;
@@ -192,14 +192,14 @@ namespace UHTN.Editor.PlanViewer
         {
             EditorGUILayout.LabelField("WorldState", width);
 
-            var worldStateDesc = planRunner.Domain.WorldStateDesc;
             var worldState = planRunner.WorldState;
 
             EditorGUI.indentLevel++;
-            for (var i = 0; i < worldStateDesc.StateLength; i++)
+            for (var i = 0; i < worldState.StateLength; i++)
             {
-                EditorGUILayout.LabelField($"{worldStateDesc.GetStateName(i)} : {worldState.Values[i]}",
-                    width);
+                var stateName = worldState.Description.GetStateName(i);
+                var stateType = worldState.Description.GetStateType(i);
+                EditorGUILayout.LabelField($"{stateName} : {stateType.ToDisplayString(worldState.Values[i])}", width);
             }
 
             EditorGUI.indentLevel--;
@@ -207,7 +207,7 @@ namespace UHTN.Editor.PlanViewer
 
         private static void DrawTask(PlanRunner planRunner, ITask task, GUILayoutOption width)
         {
-            var worldStateDesc = planRunner.Domain.WorldStateDesc;
+            var worldStateDesc = planRunner.WorldState.Description;
             switch (task)
             {
                 case IPrimitiveTask primitiveTask:
@@ -217,10 +217,13 @@ namespace UHTN.Editor.PlanViewer
                     for (var i = 0; i < worldStateDesc.StateLength; i++)
                     {
                         var stateName = worldStateDesc.GetStateName(i);
+                        var stateType = worldStateDesc.GetStateType(i);
                         var condition = primitiveTask.PreConditions[i];
                         if (condition.Operator != StateComparisonOperator.None)
                         {
-                            EditorGUILayout.LabelField($"{stateName}: {condition.Operator} {condition.Value}", width);
+                            EditorGUILayout.LabelField(
+                                $"{stateName}: {condition.Operator} {stateType.ToDisplayString(condition.Value)}",
+                                width);
                         }
                     }
 
@@ -232,10 +235,12 @@ namespace UHTN.Editor.PlanViewer
                     for (var i = 0; i < worldStateDesc.StateLength; i++)
                     {
                         var stateName = worldStateDesc.GetStateName(i);
+                        var stateType = worldStateDesc.GetStateType(i);
                         var effect = primitiveTask.Effects[i];
                         if (effect.Operator != StateEffectOperator.None)
                         {
-                            EditorGUILayout.LabelField($"{stateName}: {effect.Operator} {effect.Value} {effect.Type}",
+                            EditorGUILayout.LabelField(
+                                $"{stateName}: {effect.Operator} {stateType.ToDisplayString(effect.Value)} {effect.Type}",
                                 width);
                         }
                     }
@@ -251,6 +256,7 @@ namespace UHTN.Editor.PlanViewer
             {
                 _selectedTask = null;
             }
+
             _selectedPlanRunner = select;
 
             _planTreeView = new PlanTreeView(select, _planTreeViewState);

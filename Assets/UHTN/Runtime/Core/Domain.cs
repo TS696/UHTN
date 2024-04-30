@@ -5,8 +5,7 @@ namespace UHTN
 {
     public class Domain : IDisposable
     {
-        public readonly WorldStateDescription WorldStateDesc;
-        public int StateLength => WorldStateDesc.StateLength;
+        private readonly WorldStateDescription _worldStateDescription;
 
         public NativeArray<TaskAttribute> TaskAttributes;
 
@@ -24,15 +23,20 @@ namespace UHTN
 
         private readonly ITask[] _tasks;
 
-        internal Domain(WorldStateDescription worldStateDesc, ITask[] tasks)
+        internal Domain(WorldStateDescription worldStateDescription, ITask[] tasks)
         {
-            WorldStateDesc = worldStateDesc;
+            _worldStateDescription = worldStateDescription;
             _tasks = tasks;
         }
 
         public ITask GetTask(int taskIndex)
         {
             return _tasks[taskIndex];
+        }
+
+        public WorldState CreateWorldState()
+        {
+            return _worldStateDescription.CreateWorldState();
         }
 
         public void Dispose()

@@ -4,24 +4,53 @@ namespace UHTN
 {
     public class WorldStateDescription
     {
-        public int StateLength => _stateNames.Length;
+        public class FieldDesc
+        {
+            public string Name { get; }
+            public IWsFieldType Type { get; }
+
+            public FieldDesc(string name, IWsFieldType type)
+            {
+                Name = name;
+                Type = type;
+            }
+        }
+
+        private readonly FieldDesc[] _fieldDescList;
+        public int StateLength => _fieldDescList.Length;
 
         public string GetStateName(int index)
         {
-            return _stateNames[index];
+            return _fieldDescList[index].Name;
         }
 
-        private readonly string[] _stateNames;
-
-        public static WorldStateDescription Create<T>() where T : Enum
+        public int GetStateIndex(string name)
         {
-            var names = Enum.GetNames(typeof(T));
-            return new WorldStateDescription(names);
+            return Array.FindIndex(_fieldDescList, x => x.Name == name);
+        }
+
+        public IWsFieldType GetStateType(int index)
+        {
+            return _fieldDescList[index].Type;
+        }
+
+        public WorldStateDescription(FieldDesc[] fieldDescList)
+        {
+            _fieldDescList = fieldDescList;
+        }
+
+        public WorldState CreateWorldState()
+        {
+            return new WorldState(this);
         }
 
         public WorldStateDescription(string[] stateNames)
         {
-            _stateNames = stateNames;
+            _fieldDescList = new FieldDesc[stateNames.Length];
+            for (var i = 0; i < stateNames.Length; i++)
+            {
+                _fieldDescList[i] = new FieldDesc(stateNames[i], WsFieldInt.Instance);
+            }
         }
     }
 }

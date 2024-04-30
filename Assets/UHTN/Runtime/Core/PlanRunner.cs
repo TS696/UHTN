@@ -217,7 +217,7 @@ namespace UHTN
 
         private (bool, int) CheckCondition(WorldState worldState)
         {
-            var tempWorldState = worldStatePool.Rent(worldState.StateLength);
+            var tempWorldState = worldStatePool.Rent(worldState.Description);
             worldState.CopyTo(tempWorldState);
 
             for (var processIndex = _processList.Count - 1; processIndex >= 0; processIndex--)
@@ -357,6 +357,7 @@ namespace UHTN
                     var partialPlanIndex = plan.PartialPlans.FindIndex(x => x.Item1 == i);
                     if (partialPlanIndex < 0)
                     {
+                        yield return (compoundTask, depth, isCompleted);
                         continue;
                     }
 

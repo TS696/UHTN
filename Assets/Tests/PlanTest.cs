@@ -24,7 +24,7 @@ namespace Tests
                 );
 
             var (domain, worldState) = builder.Resolve();
-            Assert.IsTrue(PlannerCore.PlanImmediate(domain, worldState, out var _));
+            Assert.IsTrue(PlannerCore.PlanImmediate(domain, worldState.Value, out var _));
             domain.Dispose();
         }
 
@@ -41,7 +41,7 @@ namespace Tests
                 );
 
             var (domain, worldState) = builder.Resolve();
-            Assert.IsTrue(PlannerCore.PlanImmediate(domain, worldState, out var plan));
+            Assert.IsTrue(PlannerCore.PlanImmediate(domain, worldState.Value, out var plan));
             Assert.AreEqual(1, plan.Tasks.Length);
             domain.Dispose();
         }
@@ -71,7 +71,7 @@ namespace Tests
                 );
 
             var (domain, worldState) = builder.Resolve();
-            Assert.IsTrue(PlannerCore.PlanImmediate(domain, worldState, out var plan));
+            Assert.IsTrue(PlannerCore.PlanImmediate(domain, worldState.Value, out var plan));
             Assert.AreEqual(5, plan.Tasks.Length);
             domain.Dispose();
         }
@@ -87,7 +87,7 @@ namespace Tests
                     )
             );
             var (domain, worldState) = builder.Resolve();
-            Assert.IsFalse(PlannerCore.PlanImmediate(domain, worldState, out var plan));
+            Assert.IsFalse(PlannerCore.PlanImmediate(domain, worldState.Value, out var plan));
             domain.Dispose();
         }
 
@@ -119,7 +119,7 @@ namespace Tests
             var (domain, worldState) = builder.Resolve();
             worldState.SetInt(TestState.A, initialStateA);
             worldState.SetInt(TestState.B, initialStateB);
-            PlannerCore.PlanImmediate(domain, worldState, out var plan);
+            PlannerCore.PlanImmediate(domain, worldState.Value, out var plan);
             var mtr = plan.MethodTraversalRecord;
             Assert.True(mtr.SequenceEqual(expectMtr));
 
@@ -160,7 +160,7 @@ namespace Tests
             var (domain, worldState) = builder.Resolve();
             worldState.SetInt(TestState.A, initialStateA);
             worldState.SetInt(TestState.B, initialStateB);
-            PlannerCore.PlanImmediate(domain, worldState, out var plan);
+            PlannerCore.PlanImmediate(domain, worldState.Value, out var plan);
             var mtr = plan.MethodTraversalRecord;
             Assert.True(mtr.SequenceEqual(expectMtr));
 

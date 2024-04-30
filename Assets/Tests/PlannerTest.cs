@@ -30,7 +30,7 @@ namespace Tests
                 );
 
             var (domain, worldState) = builder.Resolve();
-            var planner = new Planner(domain, worldState);
+            var planner = new Planner(domain, worldState.Value);
             planner.ExecutionType = PlannerExecutionType.RunUntilSuccess;
             planner.Begin();
 
@@ -63,7 +63,7 @@ namespace Tests
                 );
 
             var (domain, worldState) = builder.Resolve();
-            var planner = new Planner(domain, worldState);
+            var planner = new Planner(domain, worldState.Value);
 
             planner.ExecutionType = PlannerExecutionType.RunUntilSuccess;
             planner.Begin();
@@ -102,7 +102,7 @@ namespace Tests
                 );
 
             var (domain, worldState) = builder.Resolve();
-            var planner = new Planner(domain, worldState);
+            var planner = new Planner(domain, worldState.Value);
             planner.ExecutionType = PlannerExecutionType.RunUntilSuccess;
             planner.Begin();
 
@@ -155,7 +155,7 @@ namespace Tests
                 );
 
             var (domain, worldState) = builder.Resolve();
-            var planner = new Planner(domain, worldState);
+            var planner = new Planner(domain, worldState.Value);
             planner.ExecutionType = PlannerExecutionType.RunUntilSuccess;
             planner.Begin();
 
@@ -218,7 +218,7 @@ namespace Tests
                 );
 
             var (domain, worldState) = builder.Resolve();
-            var planner = new Planner(domain, worldState);
+            var planner = new Planner(domain, worldState.Value);
             planner.ExecutionType = PlannerExecutionType.RunUntilSuccess;
             planner.Begin();
 

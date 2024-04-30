@@ -4,31 +4,31 @@ namespace UHTN
 {
     public class WorldStatePool
     {
-        private readonly Dictionary<int, Stack<WorldState>> _pool = new();
+        private readonly Dictionary<WorldStateDescription, Stack<WorldState>> _pool = new();
 
-        public WorldState Rent(int stateLength)
+        public WorldState Rent(WorldStateDescription description)
         {
-            var stack = GetStack(stateLength);
+            var stack = GetStack(description);
             if (stack.Count > 0)
             {
                 return stack.Pop();
             }
 
-            return new WorldState(stateLength);
+            return new WorldState(description);
         }
 
         public void Return(WorldState state)
         {
-            var stack = GetStack(state.StateLength);
+            var stack = GetStack(state.Description);
             stack.Push(state);
         }
 
-        private Stack<WorldState> GetStack(int stateLength)
+        private Stack<WorldState> GetStack(WorldStateDescription description)
         {
-            if (!_pool.TryGetValue(stateLength, out var stack))
+            if (!_pool.TryGetValue(description, out var stack))
             {
                 stack = new Stack<WorldState>();
-                _pool.Add(stateLength, stack);
+                _pool.Add(description, stack);
             }
 
             return stack;
