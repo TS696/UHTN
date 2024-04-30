@@ -17,6 +17,7 @@ namespace Sandbox
 
         private enum WorldState
         {
+            [WsFieldHint(typeof(WsFieldInt))]
             Count
         }
 
