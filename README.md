@@ -18,7 +18,9 @@ First, define the world state using an enum:
 ```
 private enum WorldState 
 {
+    [WsFieldHint(typeof(WsFieldBool))]
     HasKey,
+    [WsFieldHint(typeof(WsFieldBool))]
     DoorIsOpen,
 }
 ```
