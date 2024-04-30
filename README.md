@@ -10,7 +10,7 @@ This library introduces the JobSystem for task decomposition processing, enablin
 ## Installation
 Add the following line directly to `Packages/manifest.json`:
 ```json
-"com.ts696.uhtn": "https://github.com/TS696/uhtn.git?path=Assets/UHTN#0.0.6"
+"com.ts696.uhtn": "https://github.com/TS696/uhtn.git?path=Assets/UHTN#0.0.7"
 ```
 
 ## Basic Usage
@@ -58,7 +58,7 @@ worldState.SetBool(WorldState.DoorIsOpen, false);
 
 Finally create a Planner and run:
 ```
-var planner = new Planner(domain, worldState);
+var planner = new Planner(domain, worldState.Value);
 planner.Begin();
 while (planner.IsRunning)
 {
