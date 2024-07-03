@@ -5,7 +5,6 @@ namespace UHTN.Builder
     public class DomainBuilder<T> where T : Enum
     {
         private readonly DomainBuilderCore _builder;
-        private readonly TaskBuildHelper<T> _helper = new();
 
         public CompoundTaskBuilder<T> Root => _root;
         private CompoundTaskBuilder<T> _root;
@@ -27,22 +26,22 @@ namespace UHTN.Builder
 
         private void Initialize()
         {
-            var compoundTask = _helper.CreateCompound();
+            var compoundTask = new CompoundTask(DecompositionTiming.Immediate);
             AddTask(compoundTask);
             _root = new CompoundTaskBuilder<T>(compoundTask);
         }
 
         public PrimitiveTaskBuilder<T> Primitive(string taskName = "")
         {
-            var primitiveTask = _helper.CreatePrimitive(taskName);
+            var primitiveTask = new PrimitiveTask(taskName, _worldStateDescription.StateLength);
             AddTask(primitiveTask);
-            return new PrimitiveTaskBuilder<T>(_helper, primitiveTask);
+            return new PrimitiveTaskBuilder<T>(primitiveTask);
         }
 
         public CompoundTaskBuilder<T> Compound(string taskName,
             DecompositionTiming decompositionTiming = DecompositionTiming.Immediate)
         {
-            var compoundTask = _helper.CreateCompound(taskName, decompositionTiming);
+            var compoundTask = new CompoundTask(taskName, decompositionTiming);
             AddTask(compoundTask);
             return new CompoundTaskBuilder<T>(compoundTask);
         }
@@ -55,8 +54,7 @@ namespace UHTN.Builder
         public ITaskBuilder CompoundSlot(string taskName, CompoundTaskBuilder<T> compoundTaskBuilder,
             DecompositionTiming decompositionTiming)
         {
-            var compoundTask =
-                _helper.CreateCompoundWrapped(taskName, compoundTaskBuilder.CompoundTask, decompositionTiming);
+            var compoundTask = new WrappedCompoundTask(taskName, compoundTaskBuilder.CompoundTask, decompositionTiming);
             AddTask(compoundTask);
             return new FixedTaskBuilder(compoundTask);
         }
@@ -70,8 +68,8 @@ namespace UHTN.Builder
 
         public MethodBuilder<T> Method()
         {
-            var method = _helper.CreateMethod();
-            return new MethodBuilder<T>(_helper, method);
+            var method = new Method(_worldStateDescription.StateLength);
+            return new MethodBuilder<T>(method);
         }
 
         private void AddTask(ITask task)

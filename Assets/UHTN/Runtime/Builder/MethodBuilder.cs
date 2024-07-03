@@ -6,18 +6,16 @@ namespace UHTN.Builder
     {
         public Method Method => _method;
 
-        private readonly TaskBuildHelper<T> _helper;
         private readonly Method _method;
 
-        public MethodBuilder(TaskBuildHelper<T> helper, Method method)
+        public MethodBuilder(Method method)
         {
-            _helper = helper;
             _method = method;
         }
 
         public MethodBuilder<T> Precondition(T type, StateCondition value)
         {
-            _helper.SetCondition(_method.PreConditions, type, value);
+            _method.PreConditions[(int)(object)type] = value;
             return this;
         }
 
