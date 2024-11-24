@@ -73,6 +73,10 @@ namespace UHTN
             OnProcessUpdated?.Invoke();
 
             _state = MoveNext();
+            if (_state != RunnerState.Running)
+            {
+                OnStop();
+            }
         }
 
         public void ReplaceAndResumePlan(int processIndex, Plan newPlan)
@@ -94,6 +98,10 @@ namespace UHTN
             OnProcessUpdated?.Invoke();
 
             _state = MoveNext();
+            if (_state != RunnerState.Running)
+            {
+                OnStop();
+            }
         }
 
         private void OnBegin()
