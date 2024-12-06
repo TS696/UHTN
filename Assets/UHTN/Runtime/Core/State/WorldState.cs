@@ -15,7 +15,7 @@ namespace UHTN
         private readonly int[] _values;
         public IReadOnlyList<int> Values => _values;
         public int StateLength => _values.Length;
-        public event Action<DirtyReason> OnValueChanged;
+        public event Action<int, int, DirtyReason> OnValueChanged;
         public WorldStateDescription Description { get; }
 
         internal WorldState(WorldStateDescription description)
@@ -42,7 +42,7 @@ namespace UHTN
             if (_values[index] != value)
             {
                 _values[index] = value;
-                OnValueChanged?.Invoke(dirtyReason);
+                OnValueChanged?.Invoke(index, value, dirtyReason);
             }
         }
 

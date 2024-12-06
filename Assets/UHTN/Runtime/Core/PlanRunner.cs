@@ -123,7 +123,7 @@ namespace UHTN
 #endif
         }
 
-        private void OnWorldStateChanged(WorldState.DirtyReason dirtyReason)
+        private void OnWorldStateChanged(int index, int value, WorldState.DirtyReason dirtyReason)
         {
             if (dirtyReason == WorldState.DirtyReason.WorldChanged)
             {

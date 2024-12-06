@@ -103,7 +103,7 @@ namespace UHTN
             }
         }
 
-        private void SetWorldStateDirty(WorldState.DirtyReason dirtyReason)
+        private void SetWorldStateDirty(int index, int value, WorldState.DirtyReason dirtyReason)
         {
             if (!IsRunning)
             {
