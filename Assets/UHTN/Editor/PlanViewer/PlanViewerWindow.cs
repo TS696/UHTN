@@ -27,7 +27,7 @@ namespace UHTN.Editor.PlanViewer
         private float _rightViewWidth = 200;
         private float _headerHeight = 30;
 
-        [MenuItem("UHTN/Plan Viewer")]
+        [MenuItem("Window/UHTN/Plan Viewer")]
         public static void ShowWindow()
         {
             var window = GetWindow<PlanViewerWindow>("Plan Viewer");
