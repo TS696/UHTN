@@ -6,8 +6,7 @@ namespace UHTN.Builder
     {
         private readonly DomainBuilderCore _builder;
 
-        public CompoundTaskBuilder<T> Root => _root;
-        private CompoundTaskBuilder<T> _root;
+        public CompoundTaskBuilder<T> Root { get; private set; }
 
         private readonly WorldStateDescription _worldStateDescription;
 
@@ -28,7 +27,7 @@ namespace UHTN.Builder
         {
             var compoundTask = new CompoundTask(DecompositionTiming.Immediate);
             AddTask(compoundTask);
-            _root = new CompoundTaskBuilder<T>(compoundTask);
+            Root = new CompoundTaskBuilder<T>(compoundTask);
         }
 
         public PrimitiveTaskBuilder<T> Primitive(string taskName = "")
