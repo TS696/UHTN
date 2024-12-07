@@ -15,7 +15,7 @@ Add the following line directly to `Packages/manifest.json`:
 
 ## Basic Usage
 First, define the world state using an enum:
-```
+```csharp
 private enum WorldState 
 {
     [WsFieldHint(typeof(WsFieldBool))]
@@ -25,7 +25,7 @@ private enum WorldState
 }
 ```
 Next, create a domain and a world state instance using DomainBuilder:
-```
+```csharp
 var builder = DomainBuilder<WorldState>.Create();
 builder.Root.Methods(
     builder.Method().Precondition(WorldState.DoorIsOpen, StateCondition.Equal(true))
@@ -53,13 +53,13 @@ var (domain, worldState) = builder.Resolve();
 ```
 
 Set the initial values for the world state:
-```
+```csharp
 worldState.SetBool(WorldState.HasKey, false);
 worldState.SetBool(WorldState.DoorIsOpen, false);
 ```
 
 Finally create a Planner and run:
-```
+```csharp
 var planner = new Planner(domain, worldState.Value);
 planner.Begin();
 while (planner.IsRunning)
@@ -79,7 +79,7 @@ Escaped!
 
 ## Partial planning
 Partial planning can be achieved by adding `DecompositionTiming.Delayed` to compound task:
-```
+```csharp
 builder.Root.Methods(
    builder.Method().SubTasks(
        builder.Primitive().Operator(() => Debug.Log("Operator1")),
