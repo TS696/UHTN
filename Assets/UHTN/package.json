@@ -6,6 +6,6 @@
   "description": "Hierarchical Task Network library for unity.",
   "license": "MIT",
   "dependencies": {
-    "com.unity.collections": "2.1.4"
+    "com.unity.collections": "2.5.1"
   }
 }
