@@ -30,9 +30,31 @@ namespace UHTN.Editor.PlanViewer
         [MenuItem("Window/UHTN/Plan Viewer")]
         public static void ShowWindow()
         {
-            var window = GetWindow<PlanViewerWindow>("Plan Viewer");
+            var window = GetWindow();
             window.Show();
         }
+
+        public static void ShowWindow(PlanRunner planRunner)
+        {
+            if (planRunner.State is not PlanRunner.RunnerState.Running)
+            {
+                Debug.LogWarning($"PlanRunner {planRunner.Name} is not running.");
+                return;
+            }
+            
+            var window = GetWindow();
+            window.Show();
+
+            PlanViewerRegister.Register(planRunner);
+            window.OnSelectRunner(planRunner);
+            window.Reload();
+        }
+
+        private static PlanViewerWindow GetWindow()
+        {
+            return GetWindow<PlanViewerWindow>("Plan Viewer");
+        }
+
 
         private void OnEnable()
         {

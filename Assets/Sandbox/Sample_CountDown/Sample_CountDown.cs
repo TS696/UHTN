@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 namespace Sandbox
 {
+    [RequireComponent(typeof(HtnAgent))]
     public class Sample_CountDown : MonoBehaviour
     {
         [SerializeField]
@@ -13,7 +14,7 @@ namespace Sandbox
         [SerializeField]
         private Text _text;
 
-        private Planner _planner;
+        private HtnAgent _htnAgent;
 
         private enum WorldState
         {
@@ -21,7 +22,12 @@ namespace Sandbox
             Count
         }
 
-        void Start()
+        private void Awake()
+        {
+            _htnAgent = GetComponent<HtnAgent>();
+        }
+
+        private void Start()
         {
             var builder = DomainBuilder<WorldState>.Create();
 
@@ -44,22 +50,11 @@ namespace Sandbox
                 );
 
             var (domain, worldState) = builder.Resolve();
-            _planner = new Planner(domain, worldState.Value);
-            _planner.ExecutionType = PlannerExecutionType.RunUntilSuccess;
+            _htnAgent.Initialize(domain, worldState.Value);
+            _htnAgent.Run();
 
             worldState.SetInt(WorldState.Count, _count);
             _text.text = _count.ToString();
-            _planner.Begin();
-        }
-
-        private void Update()
-        {
-            _planner.Tick();
-        }
-
-        private void OnDestroy()
-        {
-            _planner.Dispose();
         }
     }
 }
