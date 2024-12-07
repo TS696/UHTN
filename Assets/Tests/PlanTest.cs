@@ -24,7 +24,7 @@ namespace Tests
                 );
 
             var (domain, worldState) = builder.Resolve();
-            Assert.IsTrue(PlannerCore.PlanImmediate(domain, worldState.Value, out var _));
+            Assert.IsTrue(PlannerCore.PlanImmediate(domain, worldState.Value, out _));
             domain.Dispose();
         }
 

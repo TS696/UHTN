@@ -1,4 +1,6 @@
-﻿namespace UHTN
+﻿using System;
+
+namespace UHTN
 {
     public readonly struct StateCondition
     {
@@ -16,7 +18,7 @@
             return new StateCondition(StateComparisonOperator.Equal, value);
         }
 
-        public static StateCondition Equal<T>(T value) where T : System.Enum
+        public static StateCondition Equal<T>(T value) where T : Enum
         {
             return Equal((int)(object)value);
         }
@@ -31,7 +33,7 @@
             return new StateCondition(StateComparisonOperator.NotEqual, value);
         }
 
-        public static StateCondition NotEqual<T>(T value) where T : System.Enum
+        public static StateCondition NotEqual<T>(T value) where T : Enum
         {
             return NotEqual((int)(object)value);
         }
@@ -46,7 +48,7 @@
             return new StateCondition(StateComparisonOperator.GreaterThan, value);
         }
 
-        public static StateCondition GreaterThan<T>(T value) where T : System.Enum
+        public static StateCondition GreaterThan<T>(T value) where T : Enum
         {
             return GreaterThan((int)(object)value);
         }
@@ -56,7 +58,7 @@
             return new StateCondition(StateComparisonOperator.GreaterThanOrEqual, value);
         }
 
-        public static StateCondition GreaterThanOrEqual<T>(T value) where T : System.Enum
+        public static StateCondition GreaterThanOrEqual<T>(T value) where T : Enum
         {
             return GreaterThanOrEqual((int)(object)value);
         }
@@ -66,7 +68,7 @@
             return new StateCondition(StateComparisonOperator.LessThan, value);
         }
 
-        public static StateCondition LessThan<T>(T value) where T : System.Enum
+        public static StateCondition LessThan<T>(T value) where T : Enum
         {
             return LessThan((int)(object)value);
         }
@@ -76,7 +78,7 @@
             return new StateCondition(StateComparisonOperator.LessThanOrEqual, value);
         }
 
-        public static StateCondition LessThanOrEqual<T>(T value) where T : System.Enum
+        public static StateCondition LessThanOrEqual<T>(T value) where T : Enum
         {
             return LessThanOrEqual((int)(object)value);
         }
@@ -92,7 +94,7 @@
                 StateComparisonOperator.GreaterThanOrEqual => value >= Value,
                 StateComparisonOperator.LessThan => value < Value,
                 StateComparisonOperator.LessThanOrEqual => value <= Value,
-                _ => throw new System.ArgumentOutOfRangeException()
+                _ => throw new ArgumentOutOfRangeException()
             };
         }
     }

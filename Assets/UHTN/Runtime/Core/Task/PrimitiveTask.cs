@@ -19,7 +19,7 @@ namespace UHTN
                 Name = name;
             }
 
-            Attribute = new TaskAttribute(TaskType.Primitive, DecompositionTiming.Immediate);
+            Attribute = new TaskAttribute(TaskType.Primitive);
 
             PreConditions = new StateCondition[stateLength];
             Effects = new StateEffect[stateLength];

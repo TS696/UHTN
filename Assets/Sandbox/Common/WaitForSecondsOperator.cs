@@ -7,12 +7,12 @@ namespace Sandbox
     {
         private readonly float _duration;
         private float _elapsedTime;
-        
+
         public WaitForSecondsOperator(float duration)
         {
             _duration = duration;
         }
-        
+
         public void Begin()
         {
             _elapsedTime = 0;

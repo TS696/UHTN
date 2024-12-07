@@ -57,7 +57,8 @@ namespace Tests
                         ),
                     builder.Method()
                         .SubTasks(
-                            builder.Primitive().Effect(TestState.A, StateEffect.Assign(1)).Operator(() => Debug.Log("Method2")),
+                            builder.Primitive().Effect(TestState.A, StateEffect.Assign(1))
+                                .Operator(() => Debug.Log("Method2")),
                             builder.Primitive().Operator(() => OperatorState.Failed)
                         )
                 );
@@ -73,7 +74,7 @@ namespace Tests
             {
                 tickCount++;
             }
-            
+
             planner.Dispose();
 
             LogAssert.Expect(LogType.Log, "Method2");
@@ -190,7 +191,7 @@ namespace Tests
                 .Methods(
                     builder.Method()
                         .SubTasks(
-                            builder.Primitive().Operator(() => Debug.Log($"LogA")),
+                            builder.Primitive().Operator(() => Debug.Log("LogA")),
                             builder.Compound(DecompositionTiming.Delayed)
                                 .Methods(
                                     builder.Method().Precondition(TestState.A, StateCondition.Equal(0))
