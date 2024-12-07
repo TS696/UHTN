@@ -4,21 +4,20 @@ namespace UHTN.Builder
 {
     public class CompoundTaskBuilder<T> : ITaskBuilder where T : Enum
     {
-        private readonly CompoundTask _compoundTask;
-        internal CompoundTask CompoundTask => _compoundTask;
+        internal CompoundTask CompoundTask { get; }
 
-        ITask ITaskBuilder.Task => _compoundTask;
+        ITask ITaskBuilder.Task => CompoundTask;
 
         public CompoundTaskBuilder(CompoundTask compoundTask)
         {
-            _compoundTask = compoundTask;
+            CompoundTask = compoundTask;
         }
 
         public CompoundTaskBuilder<T> Methods(params MethodBuilder<T>[] methodBuilders)
         {
             foreach (var methodBuilder in methodBuilders)
             {
-                _compoundTask.Methods.Add(methodBuilder.Method);
+                CompoundTask.Methods.Add(methodBuilder.Method);
             }
 
             return this;

@@ -17,12 +17,11 @@ namespace UHTN
 
         public PlannerExecutionType ExecutionType { get; set; }
 
-        private readonly PlanRunner _planRunner = new();
-        public PlanRunner PlanRunner => _planRunner;
+        public PlanRunner PlanRunner { get; } = new();
 
-        private readonly Domain _domain;
+        public Domain Domain { get; }
 
-        private readonly WorldState _worldState;
+        public WorldState WorldState { get; }
 
         private bool _isWorldStateDirty;
 
@@ -30,10 +29,10 @@ namespace UHTN
 
         public Planner(Domain domain, WorldState worldState)
         {
-            _domain = domain;
-            _worldState = worldState;
+            Domain = domain;
+            WorldState = worldState;
 
-            _worldState.OnValueChanged += SetWorldStateDirty;
+            WorldState.OnValueChanged += SetWorldStateDirty;
         }
 
         private enum PlanRequestType
@@ -92,7 +91,7 @@ namespace UHTN
         public void Stop()
         {
             Pause();
-            _planRunner.Stop();
+            PlanRunner.Stop();
             IsRunning = false;
         }
 
@@ -104,7 +103,7 @@ namespace UHTN
             }
         }
 
-        private void SetWorldStateDirty(WorldState.DirtyReason dirtyReason)
+        private void SetWorldStateDirty(int index, int value, WorldState.DirtyReason dirtyReason)
         {
             if (!IsRunning)
             {
@@ -134,17 +133,17 @@ namespace UHTN
             {
                 CompletePlanRequest();
             }
-            else if (_planRunner.State == PlanRunner.RunnerState.None)
+            else if (PlanRunner.State == PlanRunner.RunnerState.None)
             {
                 RequestPlanAndComplete(PlanRequestType.Begin);
             }
 
-            if (_planRunner.State == PlanRunner.RunnerState.Running)
+            if (PlanRunner.State == PlanRunner.RunnerState.Running)
             {
-                _planRunner.Tick();
+                PlanRunner.Tick();
             }
 
-            switch (_planRunner.State)
+            switch (PlanRunner.State)
             {
                 case PlanRunner.RunnerState.Success:
                     if (ExecutionType == PlannerExecutionType.RunUntilSuccess)
@@ -165,7 +164,7 @@ namespace UHTN
 
         private void RequestPlan(PlanRequestType requestType, int targetTaskIndex = 0, int processIndex = 0)
         {
-            _planRequest.Request(requestType, PlannerCore.Plan(_domain, _worldState, targetTaskIndex), processIndex);
+            _planRequest.Request(requestType, PlannerCore.Plan(Domain, WorldState, targetTaskIndex), processIndex);
         }
 
         private void RequestPlanAndComplete(PlanRequestType requestType, int targetTaskIndex = 0, int processIndex = 0)
@@ -181,10 +180,10 @@ namespace UHTN
                 switch (_planRequest.RequestType)
                 {
                     case PlanRequestType.Begin:
-                        _planRunner.Begin(_domain, plan, _worldState);
+                        PlanRunner.Begin(Domain, plan, WorldState);
                         break;
                     case PlanRequestType.ReplaceAndResume:
-                        _planRunner.ReplaceAndResumePlan(_planRequest.ProcessIndex, plan);
+                        PlanRunner.ReplaceAndResumePlan(_planRequest.ProcessIndex, plan);
                         break;
                 }
 
@@ -196,14 +195,14 @@ namespace UHTN
                 var processIndex = _planRequest.ProcessIndex - 1;
                 if (processIndex >= 0)
                 {
-                    var process = _planRunner.Processes[processIndex];
+                    var process = PlanRunner.Processes[processIndex];
                     RequestPlanAndComplete(PlanRequestType.ReplaceAndResume, process.Plan.TargetTaskIndex,
                         processIndex);
                     return;
                 }
             }
 
-            _planRunner.Stop();
+            PlanRunner.Stop();
         }
 
         private void OnSuccess()
@@ -213,8 +212,8 @@ namespace UHTN
 
         private void OnFailed()
         {
-            var index = _planRunner.FailedProcessIndex;
-            var process = _planRunner.Processes[index];
+            var index = PlanRunner.FailedProcessIndex;
+            var process = PlanRunner.Processes[index];
             var plan = process.Plan;
 
             RequestPlanAndComplete(PlanRequestType.ReplaceAndResume, plan.TargetTaskIndex, index);
@@ -222,28 +221,28 @@ namespace UHTN
 
         private void OnWorldStateChanged()
         {
-            switch (_planRunner.State)
+            switch (PlanRunner.State)
             {
                 case PlanRunner.RunnerState.Running:
                     CompareAndRePlan();
                     break;
 
                 default:
-                    _planRequest.Request(PlanRequestType.Begin, PlannerCore.Plan(_domain, _worldState));
+                    _planRequest.Request(PlanRequestType.Begin, PlannerCore.Plan(Domain, WorldState));
                     break;
             }
         }
 
         private void CompareAndRePlan()
         {
-            var currentProcesses = _planRunner.Processes;
+            var currentProcesses = PlanRunner.Processes;
             for (var i = 0; i < currentProcesses.Count; i++)
             {
                 var process = currentProcesses[i];
                 var plan = process.Plan;
-                if (!PlannerCore.PlanImmediate(_domain, _worldState, out var newPlan, plan.TargetTaskIndex))
+                if (!PlannerCore.PlanImmediate(Domain, WorldState, out var newPlan, plan.TargetTaskIndex))
                 {
-                    _planRunner.Stop();
+                    PlanRunner.Stop();
                     return;
                 }
 
@@ -253,7 +252,7 @@ namespace UHTN
                         break;
 
                     case MtrCompareResult.NewPlanIsBetter:
-                        _planRunner.ReplaceAndResumePlan(i, newPlan);
+                        PlanRunner.ReplaceAndResumePlan(i, newPlan);
                         return;
 
                     case MtrCompareResult.OldPlanIsBetter:
@@ -291,8 +290,8 @@ namespace UHTN
         public void Dispose()
         {
             _planRequest.Dispose();
-            _planRunner.Stop();
-            _domain.Dispose();
+            PlanRunner.Stop();
+            Domain.Dispose();
         }
     }
 }

@@ -35,9 +35,9 @@ namespace UHTN.Editor.PlanViewer
                 return root;
             }
 
-            int id = 2;
+            var id = 2;
 
-            TreeViewItem current = header;
+            var current = header;
             var lastDepth = 0;
             foreach (var (task, depth, isCompleted) in _planRunner.IterateSchedule())
             {

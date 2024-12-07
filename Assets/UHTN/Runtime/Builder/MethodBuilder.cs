@@ -4,18 +4,16 @@ namespace UHTN.Builder
 {
     public class MethodBuilder<T> where T : Enum
     {
-        public Method Method => _method;
-
-        private readonly Method _method;
+        public Method Method { get; }
 
         public MethodBuilder(Method method)
         {
-            _method = method;
+            Method = method;
         }
 
         public MethodBuilder<T> Precondition(T type, StateCondition value)
         {
-            _method.PreConditions[(int)(object)type] = value;
+            Method.PreConditions[(int)(object)type] = value;
             return this;
         }
 
@@ -23,7 +21,7 @@ namespace UHTN.Builder
         {
             foreach (var taskBuilder in taskBuilders)
             {
-                _method.SubTasks.Add(taskBuilder.Task);
+                Method.SubTasks.Add(taskBuilder.Task);
             }
 
             return this;

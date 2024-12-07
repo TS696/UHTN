@@ -15,13 +15,12 @@ namespace UHTN
         }
 
 
-        private Domain _domain;
-        public Domain Domain => _domain;
+        public Domain Domain { get; private set; }
 
         public IReadOnlyList<Process> Processes => _processList;
         private readonly List<Process> _processList = new();
 
-        public Action OnProcessUpdated;
+        public event Action OnProcessUpdated;
 
         public class Process
         {
@@ -35,13 +34,11 @@ namespace UHTN
             }
         }
 
-        public RunnerState State => _state;
-        private RunnerState _state;
+        public RunnerState State { get; private set; }
 
         private IPrimitiveTask _currentTask;
 
-        public WorldState WorldState => _worldState;
-        private WorldState _worldState;
+        public WorldState WorldState { get; private set; }
 
         public int FailedProcessIndex { get; private set; } = -1;
 
@@ -53,10 +50,10 @@ namespace UHTN
 
         public void Begin(Domain domain, Plan plan, WorldState worldState)
         {
-            _domain = domain;
-            _worldState = worldState;
+            Domain = domain;
+            WorldState = worldState;
 
-            if (_state == RunnerState.Running)
+            if (State == RunnerState.Running)
             {
                 StopCurrentOperation();
             }
@@ -72,8 +69,8 @@ namespace UHTN
             _processList.Add(new Process(plan));
             OnProcessUpdated?.Invoke();
 
-            _state = MoveNext();
-            if (_state != RunnerState.Running)
+            State = MoveNext();
+            if (State != RunnerState.Running)
             {
                 OnStop();
             }
@@ -81,7 +78,7 @@ namespace UHTN
 
         public void ReplaceAndResumePlan(int processIndex, Plan newPlan)
         {
-            if (_state == RunnerState.Running)
+            if (State == RunnerState.Running)
             {
                 StopCurrentOperation();
             }
@@ -97,8 +94,8 @@ namespace UHTN
             _processList.Add(new Process(newPlan));
             OnProcessUpdated?.Invoke();
 
-            _state = MoveNext();
-            if (_state != RunnerState.Running)
+            State = MoveNext();
+            if (State != RunnerState.Running)
             {
                 OnStop();
             }
@@ -106,7 +103,7 @@ namespace UHTN
 
         private void OnBegin()
         {
-            _worldState.OnValueChanged += OnWorldStateChanged;
+            WorldState.OnValueChanged += OnWorldStateChanged;
 #if UNITY_EDITOR
             if (PlanViewerRegister.EnablePlanViewer)
             {
@@ -117,7 +114,7 @@ namespace UHTN
 
         private void OnStop()
         {
-            _worldState.OnValueChanged -= OnWorldStateChanged;
+            WorldState.OnValueChanged -= OnWorldStateChanged;
 #if UNITY_EDITOR
             if (PlanViewerRegister.EnablePlanViewer)
             {
@@ -126,7 +123,7 @@ namespace UHTN
 #endif
         }
 
-        private void OnWorldStateChanged(WorldState.DirtyReason dirtyReason)
+        private void OnWorldStateChanged(int index, int value, WorldState.DirtyReason dirtyReason)
         {
             if (dirtyReason == WorldState.DirtyReason.WorldChanged)
             {
@@ -136,12 +133,12 @@ namespace UHTN
 
         public void Tick()
         {
-            if (_state == RunnerState.Success || _state == RunnerState.Failed)
+            if (State is RunnerState.Success or RunnerState.Failed)
             {
                 return;
             }
 
-            if (_state == RunnerState.None)
+            if (State == RunnerState.None)
             {
                 throw new InvalidOperationException("PlanRunner is not running");
             }
@@ -149,10 +146,10 @@ namespace UHTN
             if (_isWorldStateDirty)
             {
                 _isWorldStateDirty = false;
-                var (isContinue, failedProcessIndex) = CheckCondition(_worldState);
+                var (isContinue, failedProcessIndex) = CheckCondition(WorldState);
                 if (!isContinue)
                 {
-                    _state = RunnerState.Failed;
+                    State = RunnerState.Failed;
                     FailedProcessIndex = failedProcessIndex;
                     StopCurrentOperation();
                     OnStop();
@@ -160,9 +157,9 @@ namespace UHTN
                 }
             }
 
-            _state = TickOperator();
+            State = TickOperator();
 
-            if (_state != RunnerState.Running)
+            if (State != RunnerState.Running)
             {
                 OnStop();
             }
@@ -170,13 +167,13 @@ namespace UHTN
 
         public void Stop()
         {
-            if (_state == RunnerState.None)
+            if (State == RunnerState.None)
             {
                 return;
             }
 
             FailedProcessIndex = -1;
-            _state = RunnerState.None;
+            State = RunnerState.None;
 
             StopCurrentOperation();
             OnStop();
@@ -187,7 +184,7 @@ namespace UHTN
             if (_currentTask == null)
             {
                 var crProcess = _processList[^1];
-                var nextTask = (IPrimitiveTask)_domain.GetTask(crProcess.Plan.Tasks[crProcess.OperationIndex]);
+                var nextTask = (IPrimitiveTask)Domain.GetTask(crProcess.Plan.Tasks[crProcess.OperationIndex]);
                 _currentTask = nextTask;
                 _currentTask?.OnPreExecute();
                 _currentTask?.Operator?.Begin();
@@ -257,7 +254,7 @@ namespace UHTN
             for (var i = 0; i < worldState.StateLength; i++)
             {
                 var offsetIndex = start + i;
-                if (!_domain.TaskPreconditions[offsetIndex].Check(worldState.Values[i]))
+                if (!Domain.TaskPreconditions[offsetIndex].Check(worldState.Values[i]))
                 {
                     return false;
                 }
@@ -272,7 +269,7 @@ namespace UHTN
             for (var i = 0; i < worldState.StateLength; i++)
             {
                 var offsetIndex = start + i;
-                var effect = _domain.TaskEffects[offsetIndex];
+                var effect = Domain.TaskEffects[offsetIndex];
                 if (!isExpect && effect.Type == StateEffectType.PlanOnly)
                 {
                     continue;
@@ -289,7 +286,7 @@ namespace UHTN
             if (crProcess.OperationIndex >= 0)
             {
                 var taskIndex = crProcess.Plan.Tasks[crProcess.OperationIndex];
-                ApplyTaskEffect(taskIndex, _worldState, false);
+                ApplyTaskEffect(taskIndex, WorldState, false);
             }
 
             if (crProcess.Plan.IsEmpty || crProcess.OperationIndex + 1 >= crProcess.Plan.Tasks.Length)
@@ -312,9 +309,9 @@ namespace UHTN
         {
             var crProcess = _processList[^1];
             var nextTaskIndex = crProcess.Plan.Tasks[crProcess.OperationIndex];
-            if (_domain.TaskAttributes[nextTaskIndex].Type == TaskType.Compound)
+            if (Domain.TaskAttributes[nextTaskIndex].Type == TaskType.Compound)
             {
-                if (!PlannerCore.PlanImmediate(_domain, _worldState, out var partialPlan, nextTaskIndex))
+                if (!PlannerCore.PlanImmediate(Domain, WorldState, out var partialPlan, nextTaskIndex))
                 {
                     FailedProcessIndex = _processList.Count - 1;
                     return RunnerState.Failed;
