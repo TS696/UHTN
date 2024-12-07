@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace Sandbox
 {
+    [RequireComponent(typeof(HtnAgent))]
     public class Sample_OpenDoor : MonoBehaviour
     {
         [SerializeField]
@@ -20,6 +21,8 @@ namespace Sandbox
 
         [SerializeField]
         private GameObject _yellowKey;
+
+        private HtnAgent _htnAgent;
 
         private Planner _planner;
         private EnumWorldState<WorldState> _worldState;
@@ -39,7 +42,12 @@ namespace Sandbox
             DoorIsOpen,
         }
 
-        void Start()
+        private void Awake()
+        {
+            _htnAgent = GetComponent<HtnAgent>();
+        }
+
+        private void Start()
         {
             var builder = DomainBuilder<WorldState>.Create();
 
@@ -70,11 +78,10 @@ namespace Sandbox
                 );
 
             var (domain, worldState) = builder.Resolve();
-            _worldState = worldState;
 
-            _planner = new Planner(domain, worldState.Value);
-            _planner.ExecutionType = PlannerExecutionType.RunUntilSuccess;
-            _planner.Begin();
+            _worldState = worldState;
+            _htnAgent.Initialize(domain, worldState.Value);
+            _htnAgent.Run();
         }
 
         private void Update()
@@ -83,13 +90,6 @@ namespace Sandbox
             _worldState.SetBool(WorldState.HasBlueKey, !_blueKey.activeInHierarchy);
             _worldState.SetBool(WorldState.HasYellowKey, !_yellowKey.activeInHierarchy);
             _worldState.SetBool(WorldState.DoorIsOpen, !_door.activeInHierarchy);
-
-            _planner.Tick();
-        }
-
-        private void OnDestroy()
-        {
-            _planner.Dispose();
         }
 
         private class GetKeyOperator : IOperator

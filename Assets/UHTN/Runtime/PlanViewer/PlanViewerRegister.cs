@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace UHTN.PlanViewer
@@ -24,6 +25,10 @@ namespace UHTN.PlanViewer
 
         public static void Register(PlanRunner runner)
         {
+            if (_planRunners.Contains(runner))
+            {
+                return;
+            }
             _planRunners.Add(runner);
         }
 
