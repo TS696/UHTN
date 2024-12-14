@@ -1,5 +1,4 @@
-﻿using System;
-using Unity.Burst;
+﻿using Unity.Burst;
 using Unity.Collections;
 using Unity.Jobs;
 
@@ -112,24 +111,37 @@ namespace UHTN
 
             [ReadOnly]
             public NativeArray<StateCondition> MethodPreconditions;
-
-            [WriteOnly]
+            
             public NativeList<int> DecomposedTasks;
 
-            [WriteOnly]
             public NativeList<int> MethodTraversalRecord;
 
             [WriteOnly]
             public NativeArray<bool> Results;
+           
+            private readonly struct MethodDecomposition
+            {
+                public readonly int TaskIndex;
+                public readonly bool IsRootTask;
+                public readonly int MethodIndex;
+                public readonly int ProcessStackCount;
+                public readonly int DecomposedTaskIndex;
 
-            private const int MaxLoopCount = 1000;
-            private int _loopNum;
+                public MethodDecomposition(int taskIndex, bool isRootTask, int methodIndex, int processStackCount, int decomposedTaskIndex)
+                {
+                    TaskIndex = taskIndex;
+                    IsRootTask = isRootTask;
+                    MethodIndex = methodIndex;
+                    ProcessStackCount = processStackCount;
+                    DecomposedTaskIndex = decomposedTaskIndex;
+                }
+            }
 
             public void Execute()
             {
-                var worldState = CloneWorldState(InputWorldState);
-                var isSuccess = DecomposeTask(TargetTaskIndex, DecomposedTasks, MethodTraversalRecord, worldState,
-                    true);
+                var worldState = CloneWorldState(ref InputWorldState);
+                var isSuccess = DecomposeTask(TargetTaskIndex, ref DecomposedTasks, ref MethodTraversalRecord,
+                    ref worldState);
                 if (!isSuccess)
                 {
                     DecomposedTasks.Clear();
@@ -138,103 +150,147 @@ namespace UHTN
                 Results[0] = isSuccess;
             }
 
-            private bool DecomposeTask(int taskIndex, NativeList<int> decomposedTasks,
-                NativeList<int> methodTraversalRecord, NativeArray<int> worldState, bool isRoot = false)
+            private bool DecomposeTask(int taskIndex, ref NativeList<int> decomposedTasks,
+                ref NativeList<int> methodTraversalRecord, ref NativeArray<int> worldState)
             {
-                if (MaxLoopCount < _loopNum++)
+                var processStack = new NativeList<int>(Allocator.Temp);
+                var worldStateStack = new NativeList<int>(Allocator.Temp);
+                var workingWorldState = CloneWorldState(ref worldState);
+                var methodStack = new NativeList<MethodDecomposition>(Allocator.Temp);
+                var nextMethodIndex = 0;
+                processStack.Add(taskIndex);
+                var isRootTask = true;
+
+                while (processStack.Length > 0)
                 {
-                    throw new Exception("Max loop count exceeded.");
+                    var currentTask = processStack[^1];
+                    processStack.RemoveAt(processStack.Length - 1);
+
+                    // Decompose primitive task
+                    if (TaskAttributes[currentTask].Type == TaskType.Primitive)
+                    {
+                        isRootTask = false;
+                        if (!IsValidCondition(ref workingWorldState, currentTask, ref TaskPreconditions))
+                        {
+                            if (!PopMethod(true, ref methodStack, ref processStack, ref methodTraversalRecord, ref decomposedTasks,
+                                    out nextMethodIndex, out isRootTask))
+                            {
+                                return false;
+                            }
+                            PopWorldState(ref worldStateStack, ref workingWorldState);
+                            continue;
+                        }
+
+                        ApplyTask(currentTask, ref workingWorldState);
+                        decomposedTasks.Add(currentTask);
+                    }
+                    // Decompose compound task
+                    else if (TaskAttributes[currentTask].Type == TaskType.Compound)
+                    {
+                        if (!isRootTask && TaskAttributes[currentTask].DecompositionTiming == DecompositionTiming.Delayed)
+                        {
+                            decomposedTasks.Add(currentTask);
+                            continue;
+                        }
+
+                        var range = TaskMethodIndices[currentTask];
+                        var moveNext = false;
+                        for (var methodIndex = range.Start + nextMethodIndex; methodIndex < range.End; methodIndex++)
+                        {
+                            if (IsValidCondition(ref workingWorldState, methodIndex, ref MethodPreconditions))
+                            {
+                                // Decompose Method
+                                methodTraversalRecord.Add(methodIndex);
+                                methodStack.Add(new MethodDecomposition(currentTask, isRootTask, methodIndex - range.Start, processStack.Length, decomposedTasks.Length));
+                                PushWorldState(ref worldStateStack, ref workingWorldState);
+
+                                var subTaskRange = MethodSubTaskIndices[methodIndex];
+                                for (var i = subTaskRange.End - 1; i >= subTaskRange.Start; i--)
+                                {
+                                    var subTask = MethodSubTasks[i];
+                                    processStack.Add(subTask.TaskIndex);
+                                }
+
+                                moveNext = true;
+                                break;
+                            }
+                        }
+
+                        isRootTask = false;
+
+                        if (!moveNext)
+                        {
+                            if (!PopMethod(false, ref methodStack, ref processStack, ref methodTraversalRecord, ref decomposedTasks,
+                                    out nextMethodIndex, out isRootTask))
+                            {
+                                return false;
+                            }
+                        }
+                    }
                 }
 
-                return TaskAttributes[taskIndex].Type switch
-                {
-                    TaskType.Primitive => DecomposePrimitive(taskIndex, decomposedTasks, worldState),
-                    TaskType.Compound => DecomposeCompound(taskIndex, decomposedTasks, methodTraversalRecord,
-                        ref worldState, isRoot),
-                    _ => false
-                };
-            }
 
-
-            private bool DecomposePrimitive(int taskIndex, NativeList<int> decomposedTasks, NativeArray<int> worldState)
-            {
-                if (!IsValidCondition(worldState, taskIndex, TaskPreconditions))
-                {
-                    return false;
-                }
-
-                decomposedTasks.Add(taskIndex);
+                processStack.Dispose();
+                worldStateStack.Dispose();
+                workingWorldState.Dispose();
+                methodStack.Dispose();
                 return true;
             }
 
-            private bool DecomposeCompound(int taskIndex, NativeList<int> decomposedTasks,
-                NativeList<int> methodTraversalRecord, ref NativeArray<int> worldState, bool isRoot)
-            {
-                if (!isRoot && TaskAttributes[taskIndex].DecompositionTiming == DecompositionTiming.Delayed)
-                {
-                    decomposedTasks.Add(taskIndex);
-                    return true;
-                }
-
-                var range = TaskMethodIndices[taskIndex];
-                for (var methodIndex = range.Start; methodIndex < range.End; methodIndex++)
-                {
-                    if (IsValidCondition(worldState, methodIndex, MethodPreconditions))
-                    {
-                        var cloneState = CloneWorldState(worldState);
-                        var subMethodTraversalRecord = new NativeList<int>(Allocator.Temp);
-                        var subDecomposedTasks = new NativeList<int>(Allocator.Temp);
-                        if (DecomposeMethod(methodIndex, subDecomposedTasks, subMethodTraversalRecord, worldState))
-                        {
-                            methodTraversalRecord.Add(methodIndex);
-                            methodTraversalRecord.AddRange(subMethodTraversalRecord.AsArray());
-                            decomposedTasks.AddRange(subDecomposedTasks.AsArray());
-
-                            cloneState.Dispose();
-                            subMethodTraversalRecord.Dispose();
-                            subDecomposedTasks.Dispose();
-                            return true;
-                        }
-
-                        worldState.Dispose();
-                        worldState = cloneState;
-                        subMethodTraversalRecord.Dispose();
-                        subDecomposedTasks.Dispose();
-                    }
-                }
-
-                return false;
-            }
-
-            private bool DecomposeMethod(int methodIndex, NativeList<int> decomposedTasks,
-                NativeList<int> methodTraversalRecord, NativeArray<int> worldState)
-            {
-                var success = true;
-                var range = MethodSubTaskIndices[methodIndex];
-
-                for (var i = range.Start; i < range.End; i++)
-                {
-                    var subTask = MethodSubTasks[i];
-                    if (!DecomposeTask(subTask.TaskIndex, decomposedTasks, methodTraversalRecord, worldState))
-                    {
-                        success = false;
-                        break;
-                    }
-
-                    ApplyTask(subTask.TaskIndex, worldState);
-                }
-
-                return success;
-            }
-
-            private NativeArray<int> CloneWorldState(NativeArray<int> worldState)
+            private NativeArray<int> CloneWorldState(ref NativeArray<int> worldState)
             {
                 var clone = new NativeArray<int>(worldState.Length, Allocator.Temp);
                 worldState.CopyTo(clone);
                 return clone;
             }
 
-            private void ApplyTask(int taskIndex, NativeArray<int> worldState)
+            private void PushWorldState(ref NativeList<int> worldStateStack, ref NativeArray<int> worldState)
+            {
+                worldStateStack.AddRange(worldState);
+            }
+
+            private void PopWorldState(ref NativeList<int> worldStateStack, ref NativeArray<int> outWorldState)
+            {
+                var startIdx = worldStateStack.Length - StateLength;
+                for (var i = 0; i < StateLength; i++)
+                {
+                    outWorldState[i] = worldStateStack[startIdx + i];
+                }
+
+                worldStateStack.ResizeUninitialized(worldStateStack.Length - StateLength);
+            }
+
+            private bool PopMethod(bool continueTask, ref NativeList<MethodDecomposition> methodStack, ref NativeList<int> processStack, ref NativeList<int> methodTraversalRecord, ref NativeList<int> decomposedTasks, out int nextMethodIndex, out bool isRootTask)
+            {
+                if (methodStack.Length <= 0)
+                {
+                    nextMethodIndex = -1;
+                    isRootTask = false;
+                    return false;
+                }
+
+                var lastMethod = methodStack[^1];
+                methodStack.RemoveAt(methodStack.Length - 1);
+                decomposedTasks.RemoveRange(lastMethod.DecomposedTaskIndex, decomposedTasks.Length - lastMethod.DecomposedTaskIndex);
+                processStack.RemoveRange(lastMethod.ProcessStackCount, processStack.Length - lastMethod.ProcessStackCount);
+                if (continueTask)
+                {
+                    // continue from the next method
+                    processStack.Add(lastMethod.TaskIndex);
+                    isRootTask = lastMethod.IsRootTask;
+                }
+                else
+                {
+                    isRootTask = false;
+                }
+
+                methodTraversalRecord.RemoveAt(methodTraversalRecord.Length - 1);
+
+                nextMethodIndex = lastMethod.MethodIndex + 1;
+                return true;
+            }
+
+            private void ApplyTask(int taskIndex, ref NativeArray<int> worldState)
             {
                 var start = taskIndex * StateLength;
                 for (var i = 0; i < StateLength; i++)
@@ -244,8 +300,8 @@ namespace UHTN
                 }
             }
 
-            private bool IsValidCondition(NativeArray<int> worldState, int preconditionIndex,
-                NativeArray<StateCondition> preconditions)
+            private bool IsValidCondition(ref NativeArray<int> worldState, int preconditionIndex,
+                ref NativeArray<StateCondition> preconditions)
             {
                 var start = preconditionIndex * StateLength;
 

@@ -1,5 +1,8 @@
-﻿namespace UHTN
+﻿using Unity.Burst;
+
+namespace UHTN
 {
+    [BurstCompile]
     public readonly struct ValueRange
     {
         public readonly int Start;
