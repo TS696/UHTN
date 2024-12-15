@@ -29,8 +29,8 @@ namespace Tests
                         )
                 );
 
-            var (domain, worldState) = builder.Resolve();
-            var planner = new Planner(domain, worldState.Value);
+            var domain = builder.Resolve();
+            var planner = new Planner(domain, domain.CreateWorldState());
             planner.ExecutionType = PlannerExecutionType.RunUntilSuccess;
             planner.Begin();
 
@@ -63,8 +63,8 @@ namespace Tests
                         )
                 );
 
-            var (domain, worldState) = builder.Resolve();
-            var planner = new Planner(domain, worldState.Value);
+            var domain = builder.Resolve();
+            var planner = new Planner(domain, domain.CreateWorldState());
 
             planner.ExecutionType = PlannerExecutionType.RunUntilSuccess;
             planner.Begin();
@@ -102,8 +102,9 @@ namespace Tests
                         )
                 );
 
-            var (domain, worldState) = builder.Resolve();
-            var planner = new Planner(domain, worldState.Value);
+            var domain = builder.Resolve();
+            var worldState = domain.CreateWorldState();
+            var planner = new Planner(domain, worldState);
             planner.ExecutionType = PlannerExecutionType.RunUntilSuccess;
             planner.Begin();
 
@@ -113,7 +114,7 @@ namespace Tests
                 tickCount++;
                 if (tickCount >= 2)
                 {
-                    worldState.SetInt(TestState.A, 1);
+                    worldState.SetValue((int)TestState.A, 1);
                 }
             }
 
@@ -155,8 +156,9 @@ namespace Tests
                         )
                 );
 
-            var (domain, worldState) = builder.Resolve();
-            var planner = new Planner(domain, worldState.Value);
+            var domain = builder.Resolve();
+            var worldState = domain.CreateWorldState();
+            var planner = new Planner(domain, worldState);
             planner.ExecutionType = PlannerExecutionType.RunUntilSuccess;
             planner.Begin();
 
@@ -166,11 +168,11 @@ namespace Tests
                 tickCount++;
                 if (tickCount >= 3)
                 {
-                    worldState.SetInt(TestState.A, 2);
+                    worldState.SetValue((int)TestState.A, 2);
                 }
                 else if (tickCount >= 2)
                 {
-                    worldState.SetInt(TestState.A, 1);
+                    worldState.SetValue((int)TestState.A, 1);
                 }
             }
 
@@ -218,8 +220,9 @@ namespace Tests
                         )
                 );
 
-            var (domain, worldState) = builder.Resolve();
-            var planner = new Planner(domain, worldState.Value);
+            var domain = builder.Resolve();
+            var worldState = domain.CreateWorldState();
+            var planner = new Planner(domain, worldState);
             planner.ExecutionType = PlannerExecutionType.RunUntilSuccess;
             planner.Begin();
 
@@ -229,7 +232,7 @@ namespace Tests
                 tickCount++;
                 if (tickCount >= 4)
                 {
-                    worldState.SetInt(TestState.A, 1);
+                    worldState.SetValue((int)TestState.A, 1);
                 }
             }
 

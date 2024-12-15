@@ -23,8 +23,8 @@ namespace Tests
                     builder.Method()
                 );
 
-            var (domain, worldState) = builder.Resolve();
-            Assert.IsTrue(PlannerCore.PlanImmediate(domain, worldState.Value, out _));
+            var domain = builder.Resolve();
+            Assert.IsTrue(PlannerCore.PlanImmediate(domain, domain.CreateWorldState(), out _));
             domain.Dispose();
         }
 
@@ -40,8 +40,8 @@ namespace Tests
                         )
                 );
 
-            var (domain, worldState) = builder.Resolve();
-            Assert.IsTrue(PlannerCore.PlanImmediate(domain, worldState.Value, out var plan));
+            var domain = builder.Resolve();
+            Assert.IsTrue(PlannerCore.PlanImmediate(domain, domain.CreateWorldState(), out var plan));
             Assert.AreEqual(1, plan.Tasks.Length);
             domain.Dispose();
         }
@@ -70,8 +70,8 @@ namespace Tests
                         )
                 );
 
-            var (domain, worldState) = builder.Resolve();
-            Assert.IsTrue(PlannerCore.PlanImmediate(domain, worldState.Value, out var plan));
+            var domain = builder.Resolve();
+            Assert.IsTrue(PlannerCore.PlanImmediate(domain, domain.CreateWorldState(), out var plan));
             Assert.AreEqual(5, plan.Tasks.Length);
             domain.Dispose();
         }
@@ -98,8 +98,8 @@ namespace Tests
                         )
                 );
 
-            var (domain, worldState) = builder.Resolve();
-            Assert.IsTrue(PlannerCore.PlanImmediate(domain, worldState.Value, out var plan));
+            var domain = builder.Resolve();
+            Assert.IsTrue(PlannerCore.PlanImmediate(domain, domain.CreateWorldState(), out var plan));
             Assert.AreEqual(4, plan.Tasks.Length);
             domain.Dispose();
         }
@@ -114,8 +114,8 @@ namespace Tests
                         builder.Primitive().Effect(TestState.A, StateEffect.Add(1))
                     )
             );
-            var (domain, worldState) = builder.Resolve();
-            Assert.IsFalse(PlannerCore.PlanImmediate(domain, worldState.Value, out var plan));
+            var domain = builder.Resolve();
+            Assert.IsFalse(PlannerCore.PlanImmediate(domain, domain.CreateWorldState(), out _));
             domain.Dispose();
         }
 
@@ -144,10 +144,11 @@ namespace Tests
                     )
             );
 
-            var (domain, worldState) = builder.Resolve();
-            worldState.SetInt(TestState.A, initialStateA);
-            worldState.SetInt(TestState.B, initialStateB);
-            PlannerCore.PlanImmediate(domain, worldState.Value, out var plan);
+            var domain = builder.Resolve();
+            var worldState = domain.CreateWorldState();
+            worldState.SetValue((int)TestState.A, initialStateA);
+            worldState.SetValue((int)TestState.B, initialStateB);
+            PlannerCore.PlanImmediate(domain, worldState, out var plan);
             var mtr = plan.MethodTraversalRecord;
             Assert.True(mtr.SequenceEqual(expectMtr));
 
@@ -185,10 +186,11 @@ namespace Tests
                     )
             );
 
-            var (domain, worldState) = builder.Resolve();
-            worldState.SetInt(TestState.A, initialStateA);
-            worldState.SetInt(TestState.B, initialStateB);
-            PlannerCore.PlanImmediate(domain, worldState.Value, out var plan);
+            var domain = builder.Resolve();
+            var worldState = domain.CreateWorldState();
+            worldState.SetValue((int)TestState.A, initialStateA);
+            worldState.SetValue((int)TestState.B, initialStateB);
+            PlannerCore.PlanImmediate(domain, worldState, out var plan);
             var mtr = plan.MethodTraversalRecord;
             Assert.True(mtr.SequenceEqual(expectMtr));
 
