@@ -77,6 +77,34 @@ namespace Tests
         }
 
         [Test]
+        public void MultiDecomposeTest2()
+        {
+            var builder = DomainBuilder<TestState>.Create();
+            builder.Root
+                .Methods(
+                    builder.Method()
+                        .SubTasks(
+                            builder.Primitive()
+                                .Precondition(TestState.A, StateCondition.Equal(1))
+                                .Precondition(TestState.B, StateCondition.Equal(1))
+                                .Precondition(TestState.C, StateCondition.Equal(1))
+                        ),
+                    builder.Method()
+                        .SubTasks(
+                            builder.Primitive().Effect(TestState.A, StateEffect.Add(1)),
+                            builder.Primitive().Effect(TestState.B, StateEffect.Add(1)),
+                            builder.Primitive().Effect(TestState.C, StateEffect.Add(1)),
+                            builder.Root
+                        )
+                );
+
+            var (domain, worldState) = builder.Resolve();
+            Assert.IsTrue(PlannerCore.PlanImmediate(domain, worldState.Value, out var plan));
+            Assert.AreEqual(4, plan.Tasks.Length);
+            domain.Dispose();
+        }
+
+        [Test]
         public void DecomposeFailTest()
         {
             var builder = DomainBuilder<TestState>.Create();
