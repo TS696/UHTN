@@ -6,7 +6,7 @@ namespace UHTN
     {
         public StateCondition[] PreConditions { get; }
 
-        public List<ITask> SubTasks { get; } = new();
+        public List<SubTask> SubTasks { get; } = new();
 
         public Method(int stateLength)
         {

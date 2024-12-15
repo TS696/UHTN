@@ -6,6 +6,6 @@ namespace UHTN
     {
         StateCondition[] PreConditions { get; }
 
-        List<ITask> SubTasks { get; }
+        List<SubTask> SubTasks { get; }
     }
 }

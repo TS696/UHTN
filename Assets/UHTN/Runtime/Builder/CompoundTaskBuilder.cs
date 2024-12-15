@@ -8,9 +8,13 @@ namespace UHTN.Builder
 
         ITask ITaskBuilder.Task => CompoundTask;
 
-        public CompoundTaskBuilder(CompoundTask compoundTask)
+        private readonly DecompositionTiming _decompositionTiming;
+        DecompositionTiming ITaskBuilder.DecompositionTiming => _decompositionTiming;
+
+        public CompoundTaskBuilder(CompoundTask compoundTask, DecompositionTiming decompositionTiming)
         {
             CompoundTask = compoundTask;
+            _decompositionTiming = decompositionTiming;
         }
 
         public CompoundTaskBuilder<T> Methods(params MethodBuilder<T>[] methodBuilders)

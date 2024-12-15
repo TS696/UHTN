@@ -9,19 +9,15 @@ namespace UHTN
 
         public List<IMethod> Methods { get; }
 
-        public CompoundTask(string name, DecompositionTiming decompositionTiming)
+        public CompoundTask(string name = "")
         {
             if (!string.IsNullOrEmpty(name))
             {
                 Name = name;
             }
 
-            Attribute = new TaskAttribute(TaskType.Compound, decompositionTiming);
+            Attribute = new TaskAttribute(TaskType.Compound);
             Methods = new List<IMethod>();
-        }
-
-        public CompoundTask(DecompositionTiming decompositionTiming) : this("", decompositionTiming)
-        {
         }
     }
 }

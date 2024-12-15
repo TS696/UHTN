@@ -7,6 +7,7 @@ namespace UHTN.Builder
         private readonly PrimitiveTask _primitiveTask;
 
         ITask ITaskBuilder.Task => _primitiveTask;
+        DecompositionTiming ITaskBuilder.DecompositionTiming => DecompositionTiming.Immediate;
 
         public PrimitiveTaskBuilder(PrimitiveTask primitiveTask)
         {

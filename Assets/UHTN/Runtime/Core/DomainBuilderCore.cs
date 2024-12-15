@@ -39,7 +39,7 @@ namespace UHTN
             var taskPreconditions = new NativeArray<StateCondition>(_tasks.Count * stateLength, Allocator.Persistent);
             var taskEffects = new NativeArray<StateEffect>(_tasks.Count * stateLength, Allocator.Persistent);
             var taskMethodIndices = new NativeArray<ValueRange>(_tasks.Count, Allocator.Persistent);
-            var methodSubTasks = new NativeList<SubTask>(10, Allocator.Persistent);
+            var methodSubTasks = new NativeList<TaskToDecompose>(10, Allocator.Persistent);
             var methodSubTaskIndices = new NativeList<ValueRange>(10, Allocator.Persistent);
             var methodPreConditions = new NativeList<StateCondition>(10, Allocator.Persistent);
 
@@ -67,8 +67,8 @@ namespace UHTN
                         methodSubTaskIndices.Add(new ValueRange(methodSubTasks.Length, method.SubTasks.Count));
                         foreach (var subtask in method.SubTasks)
                         {
-                            var index = GetTaskIndex(subtask);
-                            methodSubTasks.Add(new SubTask(index));
+                            var index = GetTaskIndex(subtask.Task);
+                            methodSubTasks.Add(new TaskToDecompose(index, subtask.DecompositionTiming));
                         }
 
                         foreach (var condition in method.PreConditions)

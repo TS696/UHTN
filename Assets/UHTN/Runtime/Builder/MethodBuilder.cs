@@ -21,7 +21,7 @@ namespace UHTN.Builder
         {
             foreach (var taskBuilder in taskBuilders)
             {
-                Method.SubTasks.Add(taskBuilder.Task);
+                Method.SubTasks.Add(new SubTask(taskBuilder.Task, taskBuilder.DecompositionTiming));
             }
 
             return this;

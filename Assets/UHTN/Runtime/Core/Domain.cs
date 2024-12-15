@@ -15,7 +15,7 @@ namespace UHTN
 
         public NativeArray<ValueRange> TaskMethodIndices;
 
-        public NativeList<SubTask> MethodSubTasks;
+        public NativeList<TaskToDecompose> MethodSubTasks;
 
         public NativeList<ValueRange> MethodSubTaskIndices;
 

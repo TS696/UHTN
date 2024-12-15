@@ -1,12 +1,14 @@
-namespace UHTN
+﻿namespace UHTN
 {
-    public readonly struct SubTask
+    public class SubTask
     {
-        public readonly int TaskIndex;
+        public readonly ITask Task;
+        public readonly DecompositionTiming DecompositionTiming;
 
-        public SubTask(int taskIndex)
+        public SubTask(ITask task, DecompositionTiming decompositionTiming)
         {
-            TaskIndex = taskIndex;
+            Task = task;
+            DecompositionTiming = decompositionTiming;
         }
     }
 }

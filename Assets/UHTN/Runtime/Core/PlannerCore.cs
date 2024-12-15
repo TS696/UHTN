@@ -105,7 +105,7 @@ namespace UHTN
             public NativeArray<ValueRange> TaskMethodIndices;
 
             [ReadOnly]
-            public NativeArray<SubTask> MethodSubTasks;
+            public NativeArray<TaskToDecompose> MethodSubTasks;
 
             [ReadOnly]
             public NativeArray<ValueRange> MethodSubTaskIndices;
@@ -122,14 +122,14 @@ namespace UHTN
 
             private struct DecompositionContext : IDisposable
             {
-                public NativeList<int> TaskProcessStack;
+                public NativeList<TaskToDecompose> TaskProcessStack;
                 public NativeList<int> WorldStateStack;
                 public NativeArray<int> WorkingWorldState;
                 public NativeList<MethodDecomposition> MethodStack;
 
                 public DecompositionContext(NativeArray<int> inputWorldState)
                 {
-                    TaskProcessStack = new NativeList<int>(Allocator.Temp);
+                    TaskProcessStack = new NativeList<TaskToDecompose>(Allocator.Temp);
                     WorldStateStack = new NativeList<int>(Allocator.Temp);
                     WorkingWorldState = new NativeArray<int>(inputWorldState, Allocator.Temp);
                     MethodStack = new NativeList<MethodDecomposition>(Allocator.Temp);
@@ -146,15 +146,15 @@ namespace UHTN
 
             private readonly struct MethodDecomposition
             {
-                public readonly int TaskIndex;
+                public readonly TaskToDecompose Task;
                 public readonly int MethodIndexOffset;
                 public readonly int ProcessStackCount;
                 public readonly int DecomposedTaskIndex;
 
-                public MethodDecomposition(int taskIndex, int methodIndexOffset, int processStackCount,
+                public MethodDecomposition(TaskToDecompose taskToDecompose, int methodIndexOffset, int processStackCount,
                     int decomposedTaskIndex)
                 {
-                    TaskIndex = taskIndex;
+                    Task = taskToDecompose;
                     MethodIndexOffset = methodIndexOffset;
                     ProcessStackCount = processStackCount;
                     DecomposedTaskIndex = decomposedTaskIndex;
@@ -177,17 +177,17 @@ namespace UHTN
             private bool DecomposeTask(DecompositionContext context)
             {
                 var nextMethodIndexOffset = 0;
-                context.TaskProcessStack.Add(TargetTaskIndex);
+                context.TaskProcessStack.Add(new TaskToDecompose(TargetTaskIndex, DecompositionTiming.Immediate));
 
                 while (context.TaskProcessStack.Length > 0)
                 {
-                    var currentTaskIndex = context.TaskProcessStack[^1];
+                    var currentTask = context.TaskProcessStack[^1];
                     context.TaskProcessStack.RemoveAt(context.TaskProcessStack.Length - 1);
 
                     // Decompose primitive task
-                    if (TaskAttributes[currentTaskIndex].Type == TaskType.Primitive)
+                    if (TaskAttributes[currentTask.Index].Type == TaskType.Primitive)
                     {
-                        if (!IsValidCondition(ref context.WorkingWorldState, currentTaskIndex, ref TaskPreconditions))
+                        if (!IsValidCondition(ref context.WorkingWorldState, currentTask.Index, ref TaskPreconditions))
                         {
                             if (!PopMethod(ref context, out nextMethodIndexOffset))
                             {
@@ -197,33 +197,32 @@ namespace UHTN
                             continue;
                         }
 
-                        ApplyTask(currentTaskIndex, ref context.WorkingWorldState);
-                        DecomposedTasks.Add(currentTaskIndex);
+                        ApplyTask(currentTask.Index, ref context.WorkingWorldState);
+                        DecomposedTasks.Add(currentTask.Index);
                     }
                     // Decompose compound task
-                    else if (TaskAttributes[currentTaskIndex].Type == TaskType.Compound)
+                    else if (TaskAttributes[currentTask.Index].Type == TaskType.Compound)
                     {
-                        var isRootTask = context.MethodStack.Length <= 0;
-                        if (!isRootTask && TaskAttributes[currentTaskIndex].DecompositionTiming == DecompositionTiming.Delayed)
+                        if (currentTask.DecompositionTiming == DecompositionTiming.Delayed)
                         {
-                            DecomposedTasks.Add(currentTaskIndex);
+                            DecomposedTasks.Add(currentTask.Index);
                             continue;
                         }
 
-                        var range = TaskMethodIndices[currentTaskIndex];
+                        var range = TaskMethodIndices[currentTask.Index];
                         var moveNext = false;
                         for (var methodIndex = range.Start + nextMethodIndexOffset; methodIndex < range.End; methodIndex++)
                         {
                             if (IsValidCondition(ref context.WorkingWorldState, methodIndex, ref MethodPreconditions))
                             {
                                 // Decompose Method
-                                PushMethod(currentTaskIndex, methodIndex - range.Start, ref context);
+                                PushMethod(currentTask, methodIndex - range.Start, ref context);
 
                                 var subTaskRange = MethodSubTaskIndices[methodIndex];
                                 for (var i = subTaskRange.End - 1; i >= subTaskRange.Start; i--)
                                 {
                                     var subTask = MethodSubTasks[i];
-                                    context.TaskProcessStack.Add(subTask.TaskIndex);
+                                    context.TaskProcessStack.Add(subTask);
                                 }
 
                                 moveNext = true;
@@ -242,10 +241,10 @@ namespace UHTN
                 return true;
             }
 
-            private void PushMethod(int taskIndex, int methodIndexOffset, ref DecompositionContext context)
+            private void PushMethod(TaskToDecompose task, int methodIndexOffset, ref DecompositionContext context)
             {
                 MethodTraversalRecord.Add(methodIndexOffset);
-                context.MethodStack.Add(new MethodDecomposition(taskIndex, methodIndexOffset, context.TaskProcessStack.Length,
+                context.MethodStack.Add(new MethodDecomposition(task, methodIndexOffset, context.TaskProcessStack.Length,
                     DecomposedTasks.Length));
 
                 context.WorldStateStack.AddRange(context.WorkingWorldState);
@@ -264,11 +263,11 @@ namespace UHTN
                 DecomposedTasks.RemoveRange(lastMethod.DecomposedTaskIndex, DecomposedTasks.Length - lastMethod.DecomposedTaskIndex);
                 context.TaskProcessStack.RemoveRange(lastMethod.ProcessStackCount, context.TaskProcessStack.Length - lastMethod.ProcessStackCount);
 
-                var hasNextMethod = lastMethod.MethodIndexOffset + 1 < TaskMethodIndices[lastMethod.TaskIndex].Length;
+                var hasNextMethod = lastMethod.MethodIndexOffset + 1 < TaskMethodIndices[lastMethod.Task.Index].Length;
                 if (hasNextMethod)
                 {
                     // continue from the next method
-                    context.TaskProcessStack.Add(lastMethod.TaskIndex);
+                    context.TaskProcessStack.Add(lastMethod.Task);
                 }
                 else if (context.MethodStack.Length <= 0)
                 {
