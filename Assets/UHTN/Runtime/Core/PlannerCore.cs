@@ -227,6 +227,7 @@ namespace UHTN
                                 }
 
                                 moveNext = true;
+                                nextMethodIndexOffset = 0;
                                 break;
                             }
                         }
