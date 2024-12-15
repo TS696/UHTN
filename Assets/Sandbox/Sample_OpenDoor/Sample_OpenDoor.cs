@@ -4,7 +4,7 @@ using UHTN.Agent;
 using UHTN.Builder;
 using UnityEngine;
 
-namespace Sandbox
+namespace Sandbox.Sample_OpenDoor
 {
     [RequireComponent(typeof(HtnAgent))]
     public class Sample_OpenDoor : MonoBehaviour

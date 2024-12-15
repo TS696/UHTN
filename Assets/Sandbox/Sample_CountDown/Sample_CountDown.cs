@@ -5,7 +5,7 @@ using UHTN.Builder;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Sandbox
+namespace Sandbox.Sample_CountDown
 {
     [RequireComponent(typeof(HtnAgent))]
     public class Sample_CountDown : MonoBehaviour
