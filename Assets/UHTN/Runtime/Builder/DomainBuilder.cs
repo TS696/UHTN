@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 
 namespace UHTN.Builder
 {
@@ -12,7 +13,7 @@ namespace UHTN.Builder
 
         private DomainBuilder()
         {
-            _worldStateDescription = EnumWorldState<T>.CreateDescription();
+            _worldStateDescription = CreateDescription();
             _builder = new DomainBuilderCore(_worldStateDescription);
         }
 
@@ -76,10 +77,31 @@ namespace UHTN.Builder
             _builder.AddTask(task);
         }
 
-        public (Domain, EnumWorldState<T>) Resolve()
+        public Domain Resolve()
         {
-            var domain = _builder.Resolve();
-            return (domain, new EnumWorldState<T>(domain.CreateWorldState()));
+            return _builder.Resolve();
+        }
+
+        public static WorldStateDescription CreateDescription()
+        {
+            var names = Enum.GetNames(typeof(T));
+            var fieldDescList = new WorldStateDescription.FieldDesc[names.Length];
+
+            for (var i = 0; i < names.Length; i++)
+            {
+                IWsFieldType stateType = WsFieldInt.Instance;
+
+                var fieldInfo = typeof(T).GetField(names[i]);
+                var hint = fieldInfo.GetCustomAttribute<WsFieldHintAttribute>();
+                if (hint != null)
+                {
+                    stateType = (IWsFieldType)Activator.CreateInstance(hint.Type);
+                }
+
+                fieldDescList[i] = new WorldStateDescription.FieldDesc(names[i], stateType);
+            }
+
+            return new WorldStateDescription(fieldDescList);
         }
     }
 }

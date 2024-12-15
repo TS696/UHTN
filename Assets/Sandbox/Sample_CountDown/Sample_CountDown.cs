@@ -1,9 +1,11 @@
+using Sandbox.Common;
 using UHTN;
+using UHTN.Agent;
 using UHTN.Builder;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Sandbox
+namespace Sandbox.Sample_CountDown
 {
     [RequireComponent(typeof(HtnAgent))]
     public class Sample_CountDown : MonoBehaviour
@@ -49,11 +51,11 @@ namespace Sandbox
                     builder.Method()
                 );
 
-            var (domain, worldState) = builder.Resolve();
-            _htnAgent.Initialize(domain, worldState.Value);
+            var domain = builder.Resolve();
+            _htnAgent.Initialize(domain);
             _htnAgent.Run();
 
-            worldState.SetInt(WorldState.Count, _count);
+            _htnAgent.SetState((int)WorldState.Count, _count);
             _text.text = _count.ToString();
         }
     }

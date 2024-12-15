@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Sandbox
+namespace Sandbox.Common
 {
     [RequireComponent(typeof(CharacterController))]
     public class Agent : MonoBehaviour

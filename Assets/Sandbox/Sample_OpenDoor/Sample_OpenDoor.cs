@@ -1,8 +1,10 @@
+using Sandbox.Common;
 using UHTN;
+using UHTN.Agent;
 using UHTN.Builder;
 using UnityEngine;
 
-namespace Sandbox
+namespace Sandbox.Sample_OpenDoor
 {
     [RequireComponent(typeof(HtnAgent))]
     public class Sample_OpenDoor : MonoBehaviour
@@ -25,7 +27,6 @@ namespace Sandbox
         private HtnAgent _htnAgent;
 
         private Planner _planner;
-        private EnumWorldState<WorldState> _worldState;
 
         private enum WorldState
         {
@@ -77,19 +78,16 @@ namespace Sandbox
                         )
                 );
 
-            var (domain, worldState) = builder.Resolve();
+            var domain = builder.Resolve();
 
-            _worldState = worldState;
-            _htnAgent.Initialize(domain, worldState.Value);
+            _htnAgent.Initialize(domain);
+
+            _htnAgent.AddSensor((int)WorldState.HasRedKey, new GameObjectActiveSensor(_redKey, true));
+            _htnAgent.AddSensor((int)WorldState.HasBlueKey, new GameObjectActiveSensor(_blueKey, true));
+            _htnAgent.AddSensor((int)WorldState.HasYellowKey, new GameObjectActiveSensor(_yellowKey, true));
+            _htnAgent.AddSensor((int)WorldState.DoorIsOpen, new GameObjectActiveSensor(_door, true));
+
             _htnAgent.Run();
-        }
-
-        private void Update()
-        {
-            _worldState.SetBool(WorldState.HasRedKey, !_redKey.activeInHierarchy);
-            _worldState.SetBool(WorldState.HasBlueKey, !_blueKey.activeInHierarchy);
-            _worldState.SetBool(WorldState.HasYellowKey, !_yellowKey.activeInHierarchy);
-            _worldState.SetBool(WorldState.DoorIsOpen, !_door.activeInHierarchy);
         }
 
         private class GetKeyOperator : IOperator
