@@ -69,9 +69,9 @@ namespace UHTN
                 TaskPreconditions = domain.TaskPreconditions,
                 TaskEffects = domain.TaskEffects,
                 TaskMethodIndices = domain.TaskMethodIndices,
-                MethodSubTasks = domain.MethodSubTasks.AsArray(),
-                MethodSubTaskIndices = domain.MethodSubTaskIndices.AsArray(),
-                MethodPreconditions = domain.MethodPreconditions.AsArray(),
+                MethodSubTasks = domain.MethodSubTasks,
+                MethodSubTaskIndices = domain.MethodSubTaskIndices,
+                MethodPreconditions = domain.MethodPreconditions,
                 DecomposedTasks = decomposedTasks,
                 MethodTraversalRecord = methodTraversalRecord,
                 Result = result

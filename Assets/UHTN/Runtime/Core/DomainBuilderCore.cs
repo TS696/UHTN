@@ -85,9 +85,9 @@ namespace UHTN
             domain.TaskPreconditions = taskPreconditions;
             domain.TaskEffects = taskEffects;
             domain.TaskMethodIndices = taskMethodIndices;
-            domain.MethodSubTasks = methodSubTasks;
-            domain.MethodSubTaskIndices = methodSubTaskIndices;
-            domain.MethodPreconditions = methodPreConditions;
+            domain.MethodSubTasks = methodSubTasks.AsArray();
+            domain.MethodSubTaskIndices = methodSubTaskIndices.AsArray();
+            domain.MethodPreconditions = methodPreConditions.AsArray();
 
             return domain;
         }

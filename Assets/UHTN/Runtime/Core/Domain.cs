@@ -15,11 +15,11 @@ namespace UHTN
 
         public NativeArray<ValueRange> TaskMethodIndices;
 
-        public NativeList<SubTask> MethodSubTasks;
+        public NativeArray<SubTask> MethodSubTasks;
 
-        public NativeList<ValueRange> MethodSubTaskIndices;
+        public NativeArray<ValueRange> MethodSubTaskIndices;
 
-        public NativeList<StateCondition> MethodPreconditions;
+        public NativeArray<StateCondition> MethodPreconditions;
 
         private readonly ITask[] _tasks;
 
