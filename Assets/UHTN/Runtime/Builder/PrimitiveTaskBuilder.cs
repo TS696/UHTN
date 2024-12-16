@@ -16,13 +16,13 @@ namespace UHTN.Builder
 
         public PrimitiveTaskBuilder<T> Precondition(T type, StateCondition condition)
         {
-            _primitiveTask.PreConditions[(int)(object)type] = condition;
+            _primitiveTask.PreConditions.Add(new ConditionToDecompose((int)(object)type, condition));
             return this;
         }
 
         public PrimitiveTaskBuilder<T> Effect(T type, StateEffect effect)
         {
-            _primitiveTask.Effects[(int)(object)type] = effect;
+            _primitiveTask.Effects.Add(new EffectToDecompose((int)(object)type, effect));
             return this;
         }
 

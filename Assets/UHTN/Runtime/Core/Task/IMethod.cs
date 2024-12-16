@@ -4,7 +4,7 @@ namespace UHTN
 {
     public interface IMethod
     {
-        StateCondition[] PreConditions { get; }
+        List<ConditionToDecompose> PreConditions { get; }
 
         List<SubTask> SubTasks { get; }
     }

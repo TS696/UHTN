@@ -35,26 +35,45 @@ namespace UHTN
             var stateLength = _worldStateDesc.StateLength;
             var domain = new Domain(_worldStateDesc, _tasks.ToArray());
 
-            var taskAttributes = new NativeArray<TaskAttribute>(_tasks.Count, Allocator.Persistent);
-            var taskPreconditions = new NativeArray<StateCondition>(_tasks.Count * stateLength, Allocator.Persistent);
-            var taskEffects = new NativeArray<StateEffect>(_tasks.Count * stateLength, Allocator.Persistent);
+            var tasks = new NativeArray<TaskToDecompose>(_tasks.Count, Allocator.Persistent);
+            var taskPreconditions = new NativeList<ConditionToDecompose>(_tasks.Count * stateLength, Allocator.Persistent);
+            var taskEffects = new NativeList<EffectToDecompose>(_tasks.Count * stateLength, Allocator.Persistent);
             var taskMethodIndices = new NativeArray<ValueRange>(_tasks.Count, Allocator.Persistent);
-            var methodSubTasks = new NativeList<TaskToDecompose>(10, Allocator.Persistent);
-            var methodSubTaskIndices = new NativeList<ValueRange>(10, Allocator.Persistent);
-            var methodPreConditions = new NativeList<StateCondition>(10, Allocator.Persistent);
+            var methodSubtasks = new NativeList<SubTaskToDecompose>(10, Allocator.Persistent);
+            var methodToDecomposes = new NativeList<MethodToDecompose>(10, Allocator.Persistent);
+            var methodPreConditions = new NativeList<ConditionToDecompose>(10, Allocator.Persistent);
 
+            var sumTaskPreConditionCount = 0;
+            var sumTaskEffectCount = 0;
             var sumMethodCount = 0;
+            var sumMethodPreConditionCount = 0;
             for (var i = 0; i < _tasks.Count; i++)
             {
-                taskAttributes[i] = _tasks[i].Attribute;
+                var taskType = _tasks[i].Attribute.Type;
 
-                if (taskAttributes[i].Type == TaskType.Primitive)
+                if (taskType == TaskType.Primitive)
                 {
                     var primitiveTask = (IPrimitiveTask)_tasks[i];
-                    NativeArray<StateCondition>.Copy(primitiveTask.PreConditions, 0, taskPreconditions,
-                        i * stateLength, stateLength);
-                    NativeArray<StateEffect>.Copy(primitiveTask.Effects, 0, taskEffects,
-                        i * stateLength, stateLength);
+
+                    var preConditionRange = new ValueRange(sumTaskPreConditionCount, primitiveTask.PreConditions.Count);
+                    var effectRange = new ValueRange(sumTaskEffectCount, primitiveTask.Effects.Count);
+
+                    foreach (var preCondition in primitiveTask.PreConditions)
+                    {
+                        taskPreconditions.Add(preCondition);
+                    }
+
+                    sumTaskPreConditionCount += primitiveTask.PreConditions.Count;
+
+                    foreach (var effect in primitiveTask.Effects)
+                    {
+                        taskEffects.Add(effect);
+                    }
+
+                    sumTaskEffectCount += primitiveTask.Effects.Count;
+
+                    var taskToDecompose = new TaskToDecompose(taskType, preConditionRange, effectRange);
+                    tasks[i] = taskToDecompose;
                 }
                 else
                 {
@@ -64,29 +83,38 @@ namespace UHTN
 
                     foreach (var method in compoundTask.Methods)
                     {
-                        methodSubTaskIndices.Add(new ValueRange(methodSubTasks.Length, method.SubTasks.Count));
+                        var methodToDecompose = new MethodToDecompose
+                        (
+                            new ValueRange(methodSubtasks.Length, method.SubTasks.Count),
+                            new ValueRange(sumMethodPreConditionCount, method.PreConditions.Count)
+                        );
+                        methodToDecomposes.Add(methodToDecompose);
                         foreach (var subtask in method.SubTasks)
                         {
                             var index = GetTaskIndex(subtask.Task);
-                            methodSubTasks.Add(new TaskToDecompose(index, subtask.DecompositionTiming));
+                            methodSubtasks.Add(new SubTaskToDecompose(index, subtask.DecompositionTiming));
                         }
 
                         foreach (var condition in method.PreConditions)
                         {
                             methodPreConditions.Add(condition);
                         }
+
+                        sumMethodPreConditionCount += method.PreConditions.Count;
                     }
 
                     sumMethodCount += compoundTask.Methods.Count;
+                    var taskToDecompose = new TaskToDecompose(taskType, default, default);
+                    tasks[i] = taskToDecompose;
                 }
             }
 
-            domain.TaskAttributes = taskAttributes;
+            domain.Tasks = tasks;
             domain.TaskPreconditions = taskPreconditions;
             domain.TaskEffects = taskEffects;
             domain.TaskMethodIndices = taskMethodIndices;
-            domain.MethodSubTasks = methodSubTasks;
-            domain.MethodSubTaskIndices = methodSubTaskIndices;
+            domain.MethodSubTasks = methodSubtasks;
+            domain.Methods = methodToDecomposes;
             domain.MethodPreconditions = methodPreConditions;
 
             return domain;

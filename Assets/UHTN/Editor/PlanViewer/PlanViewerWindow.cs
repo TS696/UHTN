@@ -241,10 +241,10 @@ namespace UHTN.Editor.PlanViewer
                         var stateName = worldStateDesc.GetStateName(i);
                         var stateType = worldStateDesc.GetStateType(i);
                         var condition = primitiveTask.PreConditions[i];
-                        if (condition.Operator != StateComparisonOperator.None)
+                        if (condition.Value.Operator != StateComparisonOperator.None)
                         {
                             EditorGUILayout.LabelField(
-                                $"{stateName}: {condition.Operator} {stateType.ToDisplayString(condition.Value)}",
+                                $"{stateName}: {condition.Value.Operator} {stateType.ToDisplayString(condition.Value.Value)}",
                                 width);
                         }
                     }
@@ -259,10 +259,10 @@ namespace UHTN.Editor.PlanViewer
                         var stateName = worldStateDesc.GetStateName(i);
                         var stateType = worldStateDesc.GetStateType(i);
                         var effect = primitiveTask.Effects[i];
-                        if (effect.Operator != StateEffectOperator.None)
+                        if (effect.Value.Operator != StateEffectOperator.None)
                         {
                             EditorGUILayout.LabelField(
-                                $"{stateName}: {effect.Operator} {stateType.ToDisplayString(effect.Value)} {effect.Type}",
+                                $"{stateName}: {effect.Value.Operator} {stateType.ToDisplayString(effect.Value.Value)} {effect.Value.Type}",
                                 width);
                         }
                     }

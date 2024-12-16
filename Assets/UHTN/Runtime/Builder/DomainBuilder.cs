@@ -33,7 +33,7 @@ namespace UHTN.Builder
 
         public PrimitiveTaskBuilder<T> Primitive(string taskName = "")
         {
-            var primitiveTask = new PrimitiveTask(taskName, _worldStateDescription.StateLength);
+            var primitiveTask = new PrimitiveTask(taskName);
             AddTask(primitiveTask);
             return new PrimitiveTaskBuilder<T>(primitiveTask);
         }
@@ -67,7 +67,7 @@ namespace UHTN.Builder
 
         public MethodBuilder<T> Method()
         {
-            var method = new Method(_worldStateDescription.StateLength);
+            var method = new Method();
             return new MethodBuilder<T>(method);
         }
 

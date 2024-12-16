@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace UHTN
 {
@@ -6,13 +7,13 @@ namespace UHTN
     {
         public TaskAttribute Attribute { get; }
         public string Name { get; } = "PrimitiveTask";
-        public StateCondition[] PreConditions { get; }
-        public StateEffect[] Effects { get; }
+        public List<ConditionToDecompose> PreConditions { get; } = new();
+        public List<EffectToDecompose> Effects { get; } = new();
         public IOperator Operator { get; private set; }
         public Action PreExecute { get; set; }
         public Action PostExecute { get; set; }
 
-        public PrimitiveTask(string name, int stateLength)
+        public PrimitiveTask(string name)
         {
             if (!string.IsNullOrEmpty(name))
             {
@@ -20,13 +21,6 @@ namespace UHTN
             }
 
             Attribute = new TaskAttribute(TaskType.Primitive);
-
-            PreConditions = new StateCondition[stateLength];
-            Effects = new StateEffect[stateLength];
-        }
-
-        public PrimitiveTask(int stateLength) : this("", stateLength)
-        {
         }
 
         void IPrimitiveTask.OnPreExecute()
