@@ -49,7 +49,7 @@ namespace UHTN
             var sumMethodPreconditionCount = 0;
             for (var i = 0; i < _tasks.Count; i++)
             {
-                var taskType = _tasks[i].Attribute.Type;
+                var taskType = _tasks[i].Type;
 
                 if (taskType == TaskType.Primitive)
                 {

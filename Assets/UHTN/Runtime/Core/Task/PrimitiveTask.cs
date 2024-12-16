@@ -5,7 +5,7 @@ namespace UHTN
 {
     public class PrimitiveTask : IPrimitiveTask
     {
-        public TaskAttribute Attribute { get; }
+        public TaskType Type => TaskType.Primitive;
         public string Name { get; } = "PrimitiveTask";
         public List<ConditionToDecompose> Preconditions { get; } = new();
         public List<EffectToDecompose> Effects { get; } = new();
@@ -19,8 +19,6 @@ namespace UHTN
             {
                 Name = name;
             }
-
-            Attribute = new TaskAttribute(TaskType.Primitive);
         }
 
         void IPrimitiveTask.OnPreExecute()

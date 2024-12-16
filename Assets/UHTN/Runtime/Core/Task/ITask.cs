@@ -2,7 +2,7 @@
 {
     public interface ITask
     {
-        TaskAttribute Attribute { get; }
+        TaskType Type { get; }
         string Name { get; }
     }
 }

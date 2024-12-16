@@ -4,10 +4,10 @@ namespace UHTN
 {
     public class CompoundTask : ICompoundTask
     {
-        public TaskAttribute Attribute { get; }
+        public TaskType Type => TaskType.Compound;
         public string Name { get; } = "CompoundTask";
 
-        public List<IMethod> Methods { get; }
+        public List<IMethod> Methods { get; } = new();
 
         public CompoundTask(string name = "")
         {
@@ -15,9 +15,6 @@ namespace UHTN
             {
                 Name = name;
             }
-
-            Attribute = new TaskAttribute(TaskType.Compound);
-            Methods = new List<IMethod>();
         }
     }
 }
