@@ -236,17 +236,14 @@ namespace UHTN.Editor.PlanViewer
                     EditorGUILayout.LabelField("Preconditions", width);
 
                     EditorGUI.indentLevel++;
-                    for (var i = 0; i < worldStateDesc.StateLength; i++)
+
+                    foreach (var condition in primitiveTask.Preconditions)
                     {
-                        var stateName = worldStateDesc.GetStateName(i);
-                        var stateType = worldStateDesc.GetStateType(i);
-                        var condition = primitiveTask.Preconditions[i];
-                        if (condition.Value.Operator != StateComparisonOperator.None)
-                        {
-                            EditorGUILayout.LabelField(
-                                $"{stateName}: {condition.Value.Operator} {stateType.ToDisplayString(condition.Value.Value)}",
-                                width);
-                        }
+                        var stateName = worldStateDesc.GetStateName(condition.StateIndex);
+                        var stateType = worldStateDesc.GetStateType(condition.StateIndex);
+                        EditorGUILayout.LabelField(
+                            $"{stateName}: {condition.Value.Operator} {stateType.ToDisplayString(condition.Value.Value)}",
+                            width);
                     }
 
                     EditorGUI.indentLevel--;
@@ -254,17 +251,13 @@ namespace UHTN.Editor.PlanViewer
                     EditorGUILayout.LabelField("Effects", width);
 
                     EditorGUI.indentLevel++;
-                    for (var i = 0; i < worldStateDesc.StateLength; i++)
+                    foreach (var effect in primitiveTask.Effects)
                     {
-                        var stateName = worldStateDesc.GetStateName(i);
-                        var stateType = worldStateDesc.GetStateType(i);
-                        var effect = primitiveTask.Effects[i];
-                        if (effect.Value.Operator != StateEffectOperator.None)
-                        {
-                            EditorGUILayout.LabelField(
-                                $"{stateName}: {effect.Value.Operator} {stateType.ToDisplayString(effect.Value.Value)} {effect.Value.Type}",
-                                width);
-                        }
+                        var stateName = worldStateDesc.GetStateName(effect.StateIndex);
+                        var stateType = worldStateDesc.GetStateType(effect.StateIndex);
+                        EditorGUILayout.LabelField(
+                            $"{stateName}: {effect.Value.Operator} {stateType.ToDisplayString(effect.Value.Value)}",
+                            width);
                     }
 
                     EditorGUI.indentLevel--;
