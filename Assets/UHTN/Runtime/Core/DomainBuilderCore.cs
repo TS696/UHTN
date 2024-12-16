@@ -40,7 +40,7 @@ namespace UHTN
             var taskEffects = new NativeList<EffectToDecompose>(_tasks.Count * stateLength, Allocator.Persistent);
             var taskMethodIndices = new NativeArray<ValueRange>(_tasks.Count, Allocator.Persistent);
             var methodSubtasks = new NativeList<SubTaskToDecompose>(10, Allocator.Persistent);
-            var methodToDecomposes = new NativeList<MethodToDecompose>(10, Allocator.Persistent);
+            var methods = new NativeList<MethodToDecompose>(10, Allocator.Persistent);
             var methodPreconditions = new NativeList<ConditionToDecompose>(10, Allocator.Persistent);
 
             var sumTaskPreconditionCount = 0;
@@ -88,7 +88,7 @@ namespace UHTN
                             new ValueRange(methodSubtasks.Length, method.SubTasks.Count),
                             new ValueRange(sumMethodPreconditionCount, method.Preconditions.Count)
                         );
-                        methodToDecomposes.Add(methodToDecompose);
+                        methods.Add(methodToDecompose);
                         foreach (var subtask in method.SubTasks)
                         {
                             var index = GetTaskIndex(subtask.Task);
@@ -114,7 +114,7 @@ namespace UHTN
             domain.TaskEffects = taskEffects;
             domain.TaskMethodIndices = taskMethodIndices;
             domain.MethodSubTasks = methodSubtasks;
-            domain.Methods = methodToDecomposes;
+            domain.Methods = methods;
             domain.MethodPreconditions = methodPreconditions;
 
             return domain;
