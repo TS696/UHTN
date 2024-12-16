@@ -233,14 +233,14 @@ namespace UHTN.Editor.PlanViewer
             switch (task)
             {
                 case IPrimitiveTask primitiveTask:
-                    EditorGUILayout.LabelField("PreConditions", width);
+                    EditorGUILayout.LabelField("Preconditions", width);
 
                     EditorGUI.indentLevel++;
                     for (var i = 0; i < worldStateDesc.StateLength; i++)
                     {
                         var stateName = worldStateDesc.GetStateName(i);
                         var stateType = worldStateDesc.GetStateType(i);
-                        var condition = primitiveTask.PreConditions[i];
+                        var condition = primitiveTask.Preconditions[i];
                         if (condition.Value.Operator != StateComparisonOperator.None)
                         {
                             EditorGUILayout.LabelField(

@@ -252,7 +252,7 @@ namespace UHTN
         {
             var task = Domain.Tasks[taskIndex];
             
-            for (var i = task.PreConditionRange.Start; i < task.PreConditionRange.End; i++)
+            for (var i = task.PreconditionRange.Start; i < task.PreconditionRange.End; i++)
             {
                 var condition = Domain.TaskPreconditions[i];
                 if (!condition.Value.Check(worldState.Values[condition.StateIndex]))

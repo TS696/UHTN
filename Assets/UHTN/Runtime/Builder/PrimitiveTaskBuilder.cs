@@ -16,7 +16,7 @@ namespace UHTN.Builder
 
         public PrimitiveTaskBuilder<T> Precondition(T type, StateCondition condition)
         {
-            _primitiveTask.PreConditions.Add(new ConditionToDecompose((int)(object)type, condition));
+            _primitiveTask.Preconditions.Add(new ConditionToDecompose((int)(object)type, condition));
             return this;
         }
 

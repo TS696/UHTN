@@ -7,7 +7,7 @@ namespace UHTN
     {
         public TaskAttribute Attribute { get; }
         public string Name { get; } = "PrimitiveTask";
-        public List<ConditionToDecompose> PreConditions { get; } = new();
+        public List<ConditionToDecompose> Preconditions { get; } = new();
         public List<EffectToDecompose> Effects { get; } = new();
         public IOperator Operator { get; private set; }
         public Action PreExecute { get; set; }

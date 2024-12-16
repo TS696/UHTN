@@ -187,7 +187,7 @@ namespace UHTN
                     // Decompose primitive task
                     if (Tasks[currentTask.Index].Type == TaskType.Primitive)
                     {
-                        if (!IsValidTaskPreCondition(ref context.WorkingWorldState, currentTask.Index))
+                        if (!IsValidTaskPrecondition(ref context.WorkingWorldState, currentTask.Index))
                         {
                             if (!PopMethod(ref context, out nextMethodIndexOffset))
                             {
@@ -213,7 +213,7 @@ namespace UHTN
                         var moveNext = false;
                         for (var methodIndex = range.Start + nextMethodIndexOffset; methodIndex < range.End; methodIndex++)
                         {
-                            if (IsValidMethodPreCondition(ref context.WorkingWorldState, methodIndex))
+                            if (IsValidMethodPrecondition(ref context.WorkingWorldState, methodIndex))
                             {
                                 // Decompose Method
                                 PushMethod(currentTask, methodIndex - range.Start, ref context);
@@ -299,16 +299,16 @@ namespace UHTN
                 }
             }
 
-            private bool IsValidTaskPreCondition(ref NativeArray<int> worldState, int taskIndex)
+            private bool IsValidTaskPrecondition(ref NativeArray<int> worldState, int taskIndex)
             {
                 var task = Tasks[taskIndex];
-                return IsValidCondition(ref worldState, task.PreConditionRange, ref TaskPreconditions);
+                return IsValidCondition(ref worldState, task.PreconditionRange, ref TaskPreconditions);
             }
 
-            private bool IsValidMethodPreCondition(ref NativeArray<int> worldState, int methodIndex)
+            private bool IsValidMethodPrecondition(ref NativeArray<int> worldState, int methodIndex)
             {
                 var method = Methods[methodIndex];
-                return IsValidCondition(ref worldState, method.PreConditionRange, ref MethodPreconditions);
+                return IsValidCondition(ref worldState, method.PreconditionRange, ref MethodPreconditions);
             }
 
             private bool IsValidCondition(ref NativeArray<int> worldState, ValueRange conditionRange,

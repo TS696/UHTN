@@ -41,12 +41,12 @@ namespace UHTN
             var taskMethodIndices = new NativeArray<ValueRange>(_tasks.Count, Allocator.Persistent);
             var methodSubtasks = new NativeList<SubTaskToDecompose>(10, Allocator.Persistent);
             var methodToDecomposes = new NativeList<MethodToDecompose>(10, Allocator.Persistent);
-            var methodPreConditions = new NativeList<ConditionToDecompose>(10, Allocator.Persistent);
+            var methodPreconditions = new NativeList<ConditionToDecompose>(10, Allocator.Persistent);
 
-            var sumTaskPreConditionCount = 0;
+            var sumTaskPreconditionCount = 0;
             var sumTaskEffectCount = 0;
             var sumMethodCount = 0;
-            var sumMethodPreConditionCount = 0;
+            var sumMethodPreconditionCount = 0;
             for (var i = 0; i < _tasks.Count; i++)
             {
                 var taskType = _tasks[i].Attribute.Type;
@@ -55,15 +55,15 @@ namespace UHTN
                 {
                     var primitiveTask = (IPrimitiveTask)_tasks[i];
 
-                    var preConditionRange = new ValueRange(sumTaskPreConditionCount, primitiveTask.PreConditions.Count);
+                    var preconditionRange = new ValueRange(sumTaskPreconditionCount, primitiveTask.Preconditions.Count);
                     var effectRange = new ValueRange(sumTaskEffectCount, primitiveTask.Effects.Count);
 
-                    foreach (var preCondition in primitiveTask.PreConditions)
+                    foreach (var precondition in primitiveTask.Preconditions)
                     {
-                        taskPreconditions.Add(preCondition);
+                        taskPreconditions.Add(precondition);
                     }
 
-                    sumTaskPreConditionCount += primitiveTask.PreConditions.Count;
+                    sumTaskPreconditionCount += primitiveTask.Preconditions.Count;
 
                     foreach (var effect in primitiveTask.Effects)
                     {
@@ -72,7 +72,7 @@ namespace UHTN
 
                     sumTaskEffectCount += primitiveTask.Effects.Count;
 
-                    var taskToDecompose = new TaskToDecompose(taskType, preConditionRange, effectRange);
+                    var taskToDecompose = new TaskToDecompose(taskType, preconditionRange, effectRange);
                     tasks[i] = taskToDecompose;
                 }
                 else
@@ -86,7 +86,7 @@ namespace UHTN
                         var methodToDecompose = new MethodToDecompose
                         (
                             new ValueRange(methodSubtasks.Length, method.SubTasks.Count),
-                            new ValueRange(sumMethodPreConditionCount, method.PreConditions.Count)
+                            new ValueRange(sumMethodPreconditionCount, method.Preconditions.Count)
                         );
                         methodToDecomposes.Add(methodToDecompose);
                         foreach (var subtask in method.SubTasks)
@@ -95,12 +95,12 @@ namespace UHTN
                             methodSubtasks.Add(new SubTaskToDecompose(index, subtask.DecompositionTiming));
                         }
 
-                        foreach (var condition in method.PreConditions)
+                        foreach (var condition in method.Preconditions)
                         {
-                            methodPreConditions.Add(condition);
+                            methodPreconditions.Add(condition);
                         }
 
-                        sumMethodPreConditionCount += method.PreConditions.Count;
+                        sumMethodPreconditionCount += method.Preconditions.Count;
                     }
 
                     sumMethodCount += compoundTask.Methods.Count;
@@ -115,7 +115,7 @@ namespace UHTN
             domain.TaskMethodIndices = taskMethodIndices;
             domain.MethodSubTasks = methodSubtasks;
             domain.Methods = methodToDecomposes;
-            domain.MethodPreconditions = methodPreConditions;
+            domain.MethodPreconditions = methodPreconditions;
 
             return domain;
         }

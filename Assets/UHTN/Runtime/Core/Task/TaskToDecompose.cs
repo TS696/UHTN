@@ -3,13 +3,13 @@
     public readonly struct TaskToDecompose
     {
         public readonly TaskType Type;
-        public readonly ValueRange PreConditionRange;
+        public readonly ValueRange PreconditionRange;
         public readonly ValueRange EffectRange;
         
-        public TaskToDecompose(TaskType type, ValueRange preConditionRange, ValueRange effectRange)
+        public TaskToDecompose(TaskType type, ValueRange preconditionRange, ValueRange effectRange)
         {
             Type = type;
-            PreConditionRange = preConditionRange;
+            PreconditionRange = preconditionRange;
             EffectRange = effectRange;
         }
     }

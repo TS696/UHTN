@@ -3,12 +3,12 @@ namespace UHTN
     public readonly struct MethodToDecompose
     {
         public readonly ValueRange SubTaskRange;
-        public readonly ValueRange PreConditionRange;
+        public readonly ValueRange PreconditionRange;
         
-        public MethodToDecompose(ValueRange subTaskRange, ValueRange preConditionRange)
+        public MethodToDecompose(ValueRange subTaskRange, ValueRange preconditionRange)
         {
             SubTaskRange = subTaskRange;
-            PreConditionRange = preConditionRange;
+            PreconditionRange = preconditionRange;
         }
     }
 }

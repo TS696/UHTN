@@ -13,7 +13,7 @@ namespace UHTN.Builder
 
         public MethodBuilder<T> Precondition(T type, StateCondition value)
         {
-            Method.PreConditions.Add(new ConditionToDecompose((int)(object)type, value));
+            Method.Preconditions.Add(new ConditionToDecompose((int)(object)type, value));
             return this;
         }
 
