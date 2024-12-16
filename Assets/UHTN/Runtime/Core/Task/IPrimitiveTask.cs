@@ -1,9 +1,11 @@
-﻿namespace UHTN
+﻿using System.Collections.Generic;
+
+namespace UHTN
 {
     public interface IPrimitiveTask : ITask
     {
-        StateCondition[] PreConditions { get; }
-        StateEffect[] Effects { get; }
+        List<ConditionToDecompose> Preconditions { get; }
+        List<EffectToDecompose> Effects { get; }
         IOperator Operator { get; }
         void OnPreExecute();
         void OnPostExecute();

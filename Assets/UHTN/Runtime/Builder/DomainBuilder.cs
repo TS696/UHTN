@@ -26,14 +26,14 @@ namespace UHTN.Builder
 
         private void Initialize()
         {
-            var compoundTask = new CompoundTask(DecompositionTiming.Immediate);
+            var compoundTask = new CompoundTask();
             AddTask(compoundTask);
-            Root = new CompoundTaskBuilder<T>(compoundTask);
+            Root = new CompoundTaskBuilder<T>(compoundTask, DecompositionTiming.Immediate);
         }
 
         public PrimitiveTaskBuilder<T> Primitive(string taskName = "")
         {
-            var primitiveTask = new PrimitiveTask(taskName, _worldStateDescription.StateLength);
+            var primitiveTask = new PrimitiveTask(taskName);
             AddTask(primitiveTask);
             return new PrimitiveTaskBuilder<T>(primitiveTask);
         }
@@ -41,9 +41,9 @@ namespace UHTN.Builder
         public CompoundTaskBuilder<T> Compound(string taskName,
             DecompositionTiming decompositionTiming = DecompositionTiming.Immediate)
         {
-            var compoundTask = new CompoundTask(taskName, decompositionTiming);
+            var compoundTask = new CompoundTask(taskName);
             AddTask(compoundTask);
-            return new CompoundTaskBuilder<T>(compoundTask);
+            return new CompoundTaskBuilder<T>(compoundTask, decompositionTiming);
         }
 
         public CompoundTaskBuilder<T> Compound(DecompositionTiming decompositionTiming = DecompositionTiming.Immediate)
@@ -51,24 +51,23 @@ namespace UHTN.Builder
             return Compound("", decompositionTiming);
         }
 
-        public ITaskBuilder CompoundSlot(string taskName, CompoundTaskBuilder<T> compoundTaskBuilder,
-            DecompositionTiming decompositionTiming)
-        {
-            var compoundTask = new WrappedCompoundTask(taskName, compoundTaskBuilder.CompoundTask, decompositionTiming);
-            AddTask(compoundTask);
-            return new FixedTaskBuilder(compoundTask);
-        }
-
         public ITaskBuilder CompoundSlot(CompoundTaskBuilder<T> compoundTaskBuilder,
             DecompositionTiming decompositionTiming)
         {
-            return CompoundSlot("", compoundTaskBuilder, decompositionTiming);
+            return CompoundSlot(compoundTaskBuilder.CompoundTask.Name, compoundTaskBuilder, decompositionTiming);
         }
 
+        public ITaskBuilder CompoundSlot(string name, CompoundTaskBuilder<T> compoundTaskBuilder,
+            DecompositionTiming decompositionTiming)
+        {
+            var wrappedCompoundTask = new WrappedCompoundTask(name, compoundTaskBuilder.CompoundTask);
+            AddTask(wrappedCompoundTask);
+            return new FixedTaskBuilder(wrappedCompoundTask, decompositionTiming);
+        }
 
         public MethodBuilder<T> Method()
         {
-            var method = new Method(_worldStateDescription.StateLength);
+            var method = new Method();
             return new MethodBuilder<T>(method);
         }
 

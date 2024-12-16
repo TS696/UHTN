@@ -4,13 +4,8 @@ namespace UHTN
 {
     public class Method : IMethod
     {
-        public StateCondition[] PreConditions { get; }
+        public List<ConditionToDecompose> Preconditions { get; } = new();
 
-        public List<ITask> SubTasks { get; } = new();
-
-        public Method(int stateLength)
-        {
-            PreConditions = new StateCondition[stateLength];
-        }
+        public List<SubTask> SubTasks { get; } = new();
     }
 }

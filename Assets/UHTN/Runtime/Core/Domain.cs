@@ -7,19 +7,19 @@ namespace UHTN
     {
         private readonly WorldStateDescription _worldStateDescription;
 
-        public NativeArray<TaskAttribute> TaskAttributes;
+        public NativeArray<TaskToDecompose> Tasks;
 
-        public NativeArray<StateCondition> TaskPreconditions;
+        public NativeList<ConditionToDecompose> TaskPreconditions;
 
-        public NativeArray<StateEffect> TaskEffects;
+        public NativeList<EffectToDecompose> TaskEffects;
 
         public NativeArray<ValueRange> TaskMethodIndices;
 
-        public NativeList<SubTask> MethodSubTasks;
+        public NativeList<SubTaskToDecompose> MethodSubTasks;
 
-        public NativeList<ValueRange> MethodSubTaskIndices;
+        public NativeList<MethodToDecompose> Methods;
 
-        public NativeList<StateCondition> MethodPreconditions;
+        public NativeList<ConditionToDecompose> MethodPreconditions;
 
         private readonly ITask[] _tasks;
 
@@ -41,12 +41,12 @@ namespace UHTN
 
         public void Dispose()
         {
-            TaskAttributes.Dispose();
+            Tasks.Dispose();
             TaskPreconditions.Dispose();
             TaskEffects.Dispose();
             TaskMethodIndices.Dispose();
             MethodSubTasks.Dispose();
-            MethodSubTaskIndices.Dispose();
+            Methods.Dispose();
             MethodPreconditions.Dispose();
         }
     }

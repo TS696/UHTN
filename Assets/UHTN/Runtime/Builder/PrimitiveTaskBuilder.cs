@@ -7,6 +7,7 @@ namespace UHTN.Builder
         private readonly PrimitiveTask _primitiveTask;
 
         ITask ITaskBuilder.Task => _primitiveTask;
+        DecompositionTiming ITaskBuilder.DecompositionTiming => DecompositionTiming.Immediate;
 
         public PrimitiveTaskBuilder(PrimitiveTask primitiveTask)
         {
@@ -15,13 +16,13 @@ namespace UHTN.Builder
 
         public PrimitiveTaskBuilder<T> Precondition(T type, StateCondition condition)
         {
-            _primitiveTask.PreConditions[(int)(object)type] = condition;
+            _primitiveTask.Preconditions.Add(new ConditionToDecompose((int)(object)type, condition));
             return this;
         }
 
         public PrimitiveTaskBuilder<T> Effect(T type, StateEffect effect)
         {
-            _primitiveTask.Effects[(int)(object)type] = effect;
+            _primitiveTask.Effects.Add(new EffectToDecompose((int)(object)type, effect));
             return this;
         }
 
