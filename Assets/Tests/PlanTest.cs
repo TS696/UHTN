@@ -1,5 +1,4 @@
 using NUnit.Framework;
-using System.Linq;
 using UHTN;
 using UHTN.Builder;
 
@@ -24,7 +23,7 @@ namespace Tests
                 );
 
             var domain = builder.Resolve();
-            Assert.IsTrue(PlannerCore.PlanImmediate(domain, domain.CreateWorldState(), out _));
+            Assert.That(PlannerCore.PlanImmediate(domain, domain.CreateWorldState(), out _), Is.True);
             domain.Dispose();
         }
 
@@ -41,8 +40,8 @@ namespace Tests
                 );
 
             var domain = builder.Resolve();
-            Assert.IsTrue(PlannerCore.PlanImmediate(domain, domain.CreateWorldState(), out var plan));
-            Assert.AreEqual(1, plan.Tasks.Length);
+            PlannerCore.PlanImmediate(domain, domain.CreateWorldState(), out var plan);
+            Assert.That(plan.Tasks.Length, Is.EqualTo(1));
             domain.Dispose();
         }
 
@@ -71,8 +70,8 @@ namespace Tests
                 );
 
             var domain = builder.Resolve();
-            Assert.IsTrue(PlannerCore.PlanImmediate(domain, domain.CreateWorldState(), out var plan));
-            Assert.AreEqual(5, plan.Tasks.Length);
+            PlannerCore.PlanImmediate(domain, domain.CreateWorldState(), out var plan);
+            Assert.That(plan.Tasks.Length, Is.EqualTo(5));
             domain.Dispose();
         }
 
@@ -99,8 +98,8 @@ namespace Tests
                 );
 
             var domain = builder.Resolve();
-            Assert.IsTrue(PlannerCore.PlanImmediate(domain, domain.CreateWorldState(), out var plan));
-            Assert.AreEqual(4, plan.Tasks.Length);
+            PlannerCore.PlanImmediate(domain, domain.CreateWorldState(), out var plan);
+            Assert.That(plan.Tasks.Length, Is.EqualTo(4));
             domain.Dispose();
         }
 
@@ -150,7 +149,7 @@ namespace Tests
             worldState.SetValue((int)TestState.B, initialStateB);
             PlannerCore.PlanImmediate(domain, worldState, out var plan);
             var mtr = plan.MethodTraversalRecord;
-            Assert.True(mtr.SequenceEqual(expectMtr));
+            Assert.That(mtr, Is.EquivalentTo(expectMtr));
 
             domain.Dispose();
         }
@@ -192,7 +191,7 @@ namespace Tests
             worldState.SetValue((int)TestState.B, initialStateB);
             PlannerCore.PlanImmediate(domain, worldState, out var plan);
             var mtr = plan.MethodTraversalRecord;
-            Assert.True(mtr.SequenceEqual(expectMtr));
+            Assert.That(mtr, Is.EquivalentTo(expectMtr));
 
             domain.Dispose();
         }

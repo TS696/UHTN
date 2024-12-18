@@ -40,8 +40,8 @@ namespace Tests
                 tickCount++;
             }
 
-            Assert.AreEqual(3, contextValue);
-            Assert.AreEqual(2, tickCount);
+            Assert.That(contextValue, Is.EqualTo(3));
+            Assert.That(tickCount, Is.EqualTo(2));
             planner.Dispose();
         }
 
@@ -79,7 +79,7 @@ namespace Tests
 
             LogAssert.Expect(LogType.Log, "Method2");
             LogAssert.Expect(LogType.Log, "Method1");
-            Assert.AreEqual(2, tickCount);
+            Assert.That(tickCount, Is.EqualTo(2));
         }
 
         [Test]
