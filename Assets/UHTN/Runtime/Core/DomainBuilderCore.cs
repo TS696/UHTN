@@ -109,14 +109,7 @@ namespace UHTN
                 }
             }
 
-            domain.Tasks = tasks;
-            domain.TaskPreconditions = taskPreconditions;
-            domain.TaskEffects = taskEffects;
-            domain.TaskMethodIndices = taskMethodIndices;
-            domain.MethodSubTasks = methodSubtasks;
-            domain.Methods = methods;
-            domain.MethodPreconditions = methodPreconditions;
-
+            domain.Initialize(tasks, taskPreconditions, taskEffects, taskMethodIndices, methodSubtasks, methods, methodPreconditions);
             return domain;
         }
     }
