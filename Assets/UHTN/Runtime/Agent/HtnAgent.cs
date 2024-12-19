@@ -5,10 +5,16 @@ namespace UHTN.Agent
 {
     public class HtnAgent : MonoBehaviour
     {
-        [SerializeField]
-        private PlannerExecutionType _executionType;
+        private enum DomainExecutionType
+        {
+            RunUntilSuccess,
+            RePlanForever
+        }
 
-        public bool IsRunning => Planner.IsRunning;
+        [SerializeField]
+        private DomainExecutionType _executionType;
+
+        public bool IsRunning { get; private set; }
 
         public Planner Planner { get; private set; }
 
@@ -17,8 +23,7 @@ namespace UHTN.Agent
         public void Initialize(Domain domain)
         {
             Planner = new Planner(domain, domain.CreateWorldState());
-            Planner.ExecutionType = _executionType;
-            _sensorContainer = new SensorContainer(Planner);
+            _sensorContainer = new SensorContainer(Planner.WorldState);
         }
 
         public void AddSensor(int worldStateIndex, ISensor sensor)
@@ -26,31 +31,19 @@ namespace UHTN.Agent
             _sensorContainer.AddSensor(worldStateIndex, sensor);
         }
 
-        public void SetState(int worldStateIndex, int value)
-        {
-            Planner.WorldState.SetValue(worldStateIndex, value);
-        }
-
-        private void OnValidate()
-        {
-            if (Planner == null)
-            {
-                return;
-            }
-
-            Planner.ExecutionType = _executionType;
-        }
-
         public void Run()
         {
             ThrowIfNotInitialized();
+            _sensorContainer.OnPreExecuteDomain();
             Planner.Begin();
+            IsRunning = true;
         }
 
         public void Stop()
         {
             ThrowIfNotInitialized();
             Planner.Stop();
+            IsRunning = false;
         }
 
         private void ThrowIfNotInitialized()
@@ -68,13 +61,24 @@ namespace UHTN.Agent
 
         private void Update()
         {
-            if (Planner == null || !Planner.IsRunning)
+            if (!IsRunning)
             {
                 return;
             }
 
-            _sensorContainer?.Tick();
-            Planner?.Tick();
+            _sensorContainer.Tick();
+
+            if (!Planner.Tick())
+            {
+                if (_executionType == DomainExecutionType.RunUntilSuccess)
+                {
+                    IsRunning = false;
+                    return;
+                }
+
+                _sensorContainer.OnPreExecuteDomain();
+                Planner.Begin();
+            }
         }
 
         private void OnDestroy()

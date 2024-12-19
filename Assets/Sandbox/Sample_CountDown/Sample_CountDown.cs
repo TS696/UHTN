@@ -40,12 +40,7 @@ namespace Sandbox.Sample_CountDown
                             builder.Primitive().Operator(new WaitForSecondsOperator(1)),
                             builder.Primitive()
                                 .Precondition(WorldState.Count, StateCondition.GreaterThan(0))
-                                .Effect(WorldState.Count, StateEffect.Subtract(1))
-                                .Operator(() =>
-                                {
-                                    _count--;
-                                    _text.text = _count.ToString();
-                                }),
+                                .Effect(WorldState.Count, StateEffect.Subtract(1)),
                             builder.CompoundSlot(builder.Root, DecompositionTiming.Immediate)
                         ),
                     builder.Method()
@@ -53,10 +48,35 @@ namespace Sandbox.Sample_CountDown
 
             var domain = builder.Resolve();
             _htnAgent.Initialize(domain);
+            _htnAgent.AddSensor((int)WorldState.Count, new FixedValueSensor(_count));
+            _htnAgent.Planner.WorldState.OnValueChanged += (index, value, _) =>
+            {
+                if (index == (int)WorldState.Count)
+                {
+                    _count = value;
+                    _text.text = _count.ToString();
+                }
+            };
+            
             _htnAgent.Run();
 
-            _htnAgent.SetState((int)WorldState.Count, _count);
             _text.text = _count.ToString();
+        }
+
+        private class FixedValueSensor : IIntSensor
+        {
+            public SensorUpdateMode UpdateMode => SensorUpdateMode.PreExecuteDomain;
+            private readonly int _value;
+
+            public FixedValueSensor(int value)
+            {
+                _value = value;
+            }
+
+            public int Update(int current)
+            {
+                return _value;
+            }
         }
     }
 }
