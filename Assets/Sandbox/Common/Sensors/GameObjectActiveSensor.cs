@@ -18,5 +18,7 @@ namespace Sandbox.Common
         {
             return _invert ? !_gameObject.activeInHierarchy : _gameObject.activeInHierarchy;
         }
+
+        public SensorUpdateMode UpdateMode => SensorUpdateMode.EveryTick;
     }
 }

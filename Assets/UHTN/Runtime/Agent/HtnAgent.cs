@@ -23,7 +23,7 @@ namespace UHTN.Agent
         public void Initialize(Domain domain)
         {
             Planner = new Planner(domain, domain.CreateWorldState());
-            _sensorContainer = new SensorContainer(Planner);
+            _sensorContainer = new SensorContainer(Planner.WorldState);
         }
 
         public void AddSensor(int worldStateIndex, ISensor sensor)
@@ -31,14 +31,10 @@ namespace UHTN.Agent
             _sensorContainer.AddSensor(worldStateIndex, sensor);
         }
 
-        public void SetState(int worldStateIndex, int value)
-        {
-            Planner.WorldState.SetValue(worldStateIndex, value);
-        }
-
         public void Run()
         {
             ThrowIfNotInitialized();
+            _sensorContainer.OnPreExecuteDomain();
             Planner.Begin();
             IsRunning = true;
         }
@@ -70,7 +66,7 @@ namespace UHTN.Agent
                 return;
             }
 
-            _sensorContainer?.Tick();
+            _sensorContainer.Tick();
 
             if (!Planner.Tick())
             {
@@ -80,6 +76,7 @@ namespace UHTN.Agent
                     return;
                 }
 
+                _sensorContainer.OnPreExecuteDomain();
                 Planner.Begin();
             }
         }

@@ -2,6 +2,7 @@ namespace UHTN.Agent
 {
     public interface ISensor
     {
+        SensorUpdateMode UpdateMode { get; }
         int UpdateState(int state);
     }
 
