@@ -31,7 +31,6 @@ namespace Tests
 
             var domain = builder.Resolve();
             var planner = new Planner(domain, domain.CreateWorldState());
-            planner.ExecutionType = PlannerExecutionType.RunUntilSuccess;
             planner.Begin();
 
             var tickCount = 0;
@@ -66,7 +65,6 @@ namespace Tests
             var domain = builder.Resolve();
             var planner = new Planner(domain, domain.CreateWorldState());
 
-            planner.ExecutionType = PlannerExecutionType.RunUntilSuccess;
             planner.Begin();
 
             var tickCount = 0;
@@ -105,7 +103,6 @@ namespace Tests
             var domain = builder.Resolve();
             var worldState = domain.CreateWorldState();
             var planner = new Planner(domain, worldState);
-            planner.ExecutionType = PlannerExecutionType.RunUntilSuccess;
             planner.Begin();
 
             var tickCount = 0;
@@ -159,7 +156,6 @@ namespace Tests
             var domain = builder.Resolve();
             var worldState = domain.CreateWorldState();
             var planner = new Planner(domain, worldState);
-            planner.ExecutionType = PlannerExecutionType.RunUntilSuccess;
             planner.Begin();
 
             var tickCount = 0;
@@ -223,7 +219,6 @@ namespace Tests
             var domain = builder.Resolve();
             var worldState = domain.CreateWorldState();
             var planner = new Planner(domain, worldState);
-            planner.ExecutionType = PlannerExecutionType.RunUntilSuccess;
             planner.Begin();
 
             var tickCount = 0;
