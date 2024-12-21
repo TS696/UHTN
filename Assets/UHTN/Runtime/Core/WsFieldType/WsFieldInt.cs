@@ -13,5 +13,24 @@ namespace UHTN
         {
             return true;
         }
+
+        public StateComparisonOperator[] ApplicableComparisonOperators { get; } = 
+        {
+            StateComparisonOperator.Equal,
+            StateComparisonOperator.NotEqual,
+            StateComparisonOperator.GreaterThan,
+            StateComparisonOperator.GreaterThanOrEqual,
+            StateComparisonOperator.LessThan,
+            StateComparisonOperator.LessThanOrEqual
+        };
+
+        public StateEffectOperator[] ApplicableEffectOperators { get; } =
+        {
+            StateEffectOperator.Assign,
+            StateEffectOperator.Add,
+            StateEffectOperator.Subtract,
+            StateEffectOperator.Multiply,
+            StateEffectOperator.Divide
+        };
     }
 }

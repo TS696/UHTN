@@ -80,12 +80,12 @@ namespace Sandbox.Sample_OpenDoor
 
             var domain = builder.Resolve();
 
-            _htnAgent.Initialize(domain);
+            _htnAgent.Prepare(domain);
 
-            _htnAgent.AddSensor((int)WorldState.HasRedKey, new GameObjectActiveSensor(_redKey, true));
-            _htnAgent.AddSensor((int)WorldState.HasBlueKey, new GameObjectActiveSensor(_blueKey, true));
-            _htnAgent.AddSensor((int)WorldState.HasYellowKey, new GameObjectActiveSensor(_yellowKey, true));
-            _htnAgent.AddSensor((int)WorldState.DoorIsOpen, new GameObjectActiveSensor(_door, true));
+            _htnAgent.SensorContainer.AddSensor((int)WorldState.HasRedKey, new GameObjectActiveSensor(_redKey, true));
+            _htnAgent.SensorContainer.AddSensor((int)WorldState.HasBlueKey, new GameObjectActiveSensor(_blueKey, true));
+            _htnAgent.SensorContainer.AddSensor((int)WorldState.HasYellowKey, new GameObjectActiveSensor(_yellowKey, true));
+            _htnAgent.SensorContainer.AddSensor((int)WorldState.DoorIsOpen, new GameObjectActiveSensor(_door, true));
 
             _htnAgent.Run();
         }
