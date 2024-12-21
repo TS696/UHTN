@@ -5,14 +5,14 @@ using UnityEngine;
 
 namespace UHTN.Editor.Agent
 {
-    [CustomEditor(typeof(HtnAgent))]
+    [CustomEditor(typeof(HtnAgentBase), true)]
     public class HtnAgentEditor : UnityEditor.Editor
     {
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
  
-            var agent = (HtnAgent)target;
+            var agent = (HtnAgentBase)target;
             var planner = agent.Planner;
             if (planner == null)
             {
