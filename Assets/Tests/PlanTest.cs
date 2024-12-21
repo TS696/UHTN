@@ -104,6 +104,37 @@ namespace Tests
         }
 
         [Test]
+        public void MultiPreconditionTest()
+        {
+            var builder = DomainBuilder<TestState>.Create();
+            builder.Root
+                .Methods(
+                    builder.Method()
+                        .SubTasks(
+                            builder.Primitive()
+                                .Precondition(TestState.A, StateCondition.GreaterThan(0))
+                                .Precondition(TestState.A, StateCondition.LessThan(5))
+                                .Effect(TestState.A, StateEffect.Add(1)),
+                            builder.Root
+                        ),
+                    builder.Method()
+                        .SubTasks(
+                            builder.Primitive()
+                                .Precondition(TestState.B, StateCondition.Equal(0))
+                                .Effect(TestState.A, StateEffect.Add(1))
+                                .Effect(TestState.B, StateEffect.Add(1)),
+                            builder.Root
+                        ),
+                    builder.Method()
+                );
+
+            var domain = builder.Resolve();
+            PlannerCore.PlanImmediate(domain, domain.CreateWorldState(), out var plan);
+            Assert.That(plan.Tasks.Length, Is.EqualTo(5));
+            domain.Dispose();
+        }
+
+        [Test]
         public void DecomposeFailTest()
         {
             var builder = DomainBuilder<TestState>.Create();
