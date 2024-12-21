@@ -32,7 +32,26 @@ namespace UHTN.Editor.DomainAssets
             decompositionTimingField.BindProperty(decompositionTimingProperty);
             rootElement.Add(decompositionTimingField);
 
+            taskNameField.RegisterValueChangedCallback(evt =>
+            {
+                OnTaskNameChanged(evt.newValue);
+            });
+            
+            OnTaskNameChanged(taskNameProperty.stringValue);
+
             return rootElement;
+
+            void OnTaskNameChanged(string taskName)
+            {
+                var taskAsset = domainAsset.TaskAssets.FirstOrDefault(x => x.name == taskName);
+                if (taskAsset == null)
+                {
+                    decompositionTimingField.style.display = DisplayStyle.None;
+                    return;
+                }
+                
+                decompositionTimingField.style.display = taskAsset is CompoundTaskAssetBase? DisplayStyle.Flex : DisplayStyle.None;
+            }
         }
     }
 }
