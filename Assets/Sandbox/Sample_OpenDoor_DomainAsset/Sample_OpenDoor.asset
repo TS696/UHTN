@@ -1,0 +1,172 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-3044305387840512260
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 23ba373127bb4355b477a5690677dee1, type: 3}
+  m_Name: GetYellowKeyTask
+  m_EditorClassIdentifier: 
+  _domain: {fileID: 11400000}
+  _preconditions: []
+  _effects:
+  - _stateName: HasYellowKey
+    _operator: 1
+    _value: 1
+    _type: 1
+  _keyType: 2
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bdebf0c305ee467c9accebedcc8c28a3, type: 3}
+  m_Name: Sample_OpenDoor
+  m_EditorClassIdentifier: 
+  _worldStates:
+  - _name: HasRedKey
+    _fieldType:
+      rid: 4171700324396958228
+    _sensorCreator:
+      rid: 4171700324396958272
+  - _name: HasBlueKey
+    _fieldType:
+      rid: 4171700324396958230
+    _sensorCreator:
+      rid: 4171700324396958273
+  - _name: HasYellowKey
+    _fieldType:
+      rid: 4171700324396958231
+    _sensorCreator:
+      rid: 4171700324396958234
+  _taskAssets:
+  - {fileID: 8044707866385294956}
+  - {fileID: 6718125769127600887}
+  - {fileID: 1531228012574948723}
+  - {fileID: 702273040758149933}
+  - {fileID: -3044305387840512260}
+  references:
+    version: 2
+    RefIds:
+    - rid: 4171700324396958228
+      type: {class: WsFieldBool, ns: UHTN, asm: UHTN}
+      data: 
+    - rid: 4171700324396958230
+      type: {class: WsFieldBool, ns: UHTN, asm: UHTN}
+      data: 
+    - rid: 4171700324396958231
+      type: {class: WsFieldBool, ns: UHTN, asm: UHTN}
+      data: 
+    - rid: 4171700324396958234
+      type: {class: HasKeySensorCreator, ns: Sandbox.Sample_OpenDoor_DomainAsset, asm: Assembly-CSharp}
+      data:
+        _keyType: 2
+    - rid: 4171700324396958272
+      type: {class: HasKeySensorCreator, ns: Sandbox.Sample_OpenDoor_DomainAsset, asm: Assembly-CSharp}
+      data:
+        _keyType: 0
+    - rid: 4171700324396958273
+      type: {class: HasKeySensorCreator, ns: Sandbox.Sample_OpenDoor_DomainAsset, asm: Assembly-CSharp}
+      data:
+        _keyType: 1
+--- !u!114 &702273040758149933
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 23ba373127bb4355b477a5690677dee1, type: 3}
+  m_Name: GetBlueKeyTask
+  m_EditorClassIdentifier: 
+  _domain: {fileID: 11400000}
+  _preconditions: []
+  _effects:
+  - _stateName: HasBlueKey
+    _operator: 1
+    _value: 1
+    _type: 1
+  _keyType: 1
+--- !u!114 &1531228012574948723
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 23ba373127bb4355b477a5690677dee1, type: 3}
+  m_Name: GetRedKeyTask
+  m_EditorClassIdentifier: 
+  _domain: {fileID: 11400000}
+  _preconditions: []
+  _effects:
+  - _stateName: HasRedKey
+    _operator: 1
+    _value: 1
+    _type: 1
+  _keyType: 0
+--- !u!114 &6718125769127600887
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 780ed6dd23934660879a12c4e442fc40, type: 3}
+  m_Name: OpenDoorTask
+  m_EditorClassIdentifier: 
+  _domain: {fileID: 11400000}
+  _preconditions:
+  - _stateName: HasRedKey
+    _operator: 1
+    _value: 1
+  - _stateName: HasBlueKey
+    _operator: 1
+    _value: 1
+  - _stateName: HasYellowKey
+    _operator: 1
+    _value: 1
+  _effects: []
+--- !u!114 &8044707866385294956
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 15d1591dc36f491c875cb6ef387f1fbe, type: 3}
+  m_Name: RootTask
+  m_EditorClassIdentifier: 
+  _domain: {fileID: 11400000}
+  _methods:
+  - _preconditions: []
+    _subTasks:
+    - _taskName: OpenDoorTask
+      _decompositionTiming: 0
+  - _preconditions: []
+    _subTasks:
+    - _taskName: GetRedKeyTask
+      _decompositionTiming: 0
+    - _taskName: GetBlueKeyTask
+      _decompositionTiming: 0
+    - _taskName: GetYellowKeyTask
+      _decompositionTiming: 0
+    - _taskName: RootTask
+      _decompositionTiming: 1
