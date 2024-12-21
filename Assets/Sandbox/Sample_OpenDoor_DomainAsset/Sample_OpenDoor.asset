@@ -18,7 +18,7 @@ MonoBehaviour:
   - _stateName: HasYellowKey
     _operator: 1
     _value: 1
-    _type: 1
+    _type: 0
   _keyType: 2
 --- !u!114 &11400000
 MonoBehaviour:
@@ -96,7 +96,7 @@ MonoBehaviour:
   - _stateName: HasBlueKey
     _operator: 1
     _value: 1
-    _type: 1
+    _type: 0
   _keyType: 1
 --- !u!114 &1531228012574948723
 MonoBehaviour:
@@ -116,7 +116,7 @@ MonoBehaviour:
   - _stateName: HasRedKey
     _operator: 1
     _value: 1
-    _type: 1
+    _type: 0
   _keyType: 0
 --- !u!114 &6718125769127600887
 MonoBehaviour:
