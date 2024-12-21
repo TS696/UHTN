@@ -2,9 +2,9 @@
 {
     public class HtnAgent : HtnAgentBase
     {
-        public void Initialize(Domain domain)
+        public void Prepare(Domain domain)
         {
-            InitializeImpl(domain);
+            PrepareImpl(domain);
         }
     }
 }

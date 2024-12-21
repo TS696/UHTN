@@ -57,7 +57,7 @@ namespace Sandbox.Sample_OpenDoor_DomainAsset
 
         void Start()
         {
-            _domainAssetAgent.Initialize(this);
+            _domainAssetAgent.Prepare(this);
             _domainAssetAgent.Run();
         }
 

@@ -8,10 +8,16 @@ namespace UHTN.DomainAssets
         [SerializeField]
         private DomainAsset _asset;
 
-        public void Initialize(object userData)
+        public DomainAsset Asset
+        {
+            get => _asset;
+            set => _asset = value;
+        }
+
+        public void Prepare(object userData)
         {
             var domain = _asset.ResolveDomain(userData);
-            InitializeImpl(domain);
+            PrepareImpl(domain);
             _asset.ResolveSensor(SensorContainer, userData);
         }
     }

@@ -20,15 +20,17 @@ namespace UHTN.Agent
 
         public SensorContainer SensorContainer { get; private set; }
 
-        protected void InitializeImpl(Domain domain)
+        protected void PrepareImpl(Domain domain)
         {
+            Planner?.Dispose();
+            
             Planner = new Planner(domain, domain.CreateWorldState());
             SensorContainer = new SensorContainer(Planner.WorldState);
         }
 
         public void Run()
         {
-            ThrowIfNotInitialized();
+            ThrowIfNotPrepared();
             SensorContainer.OnPreExecuteDomain();
             Planner.Begin();
             IsRunning = true;
@@ -36,16 +38,16 @@ namespace UHTN.Agent
 
         public void Stop()
         {
-            ThrowIfNotInitialized();
+            ThrowIfNotPrepared();
             Planner.Stop();
             IsRunning = false;
         }
 
-        private void ThrowIfNotInitialized()
+        private void ThrowIfNotPrepared()
         {
             if (Planner == null)
             {
-                throw new InvalidOperationException("HtnAgent is not initialized.");
+                throw new InvalidOperationException("HtnAgent is not prepared.");
             }
         }
 

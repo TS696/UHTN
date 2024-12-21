@@ -80,7 +80,7 @@ namespace Sandbox.Sample_OpenDoor
 
             var domain = builder.Resolve();
 
-            _htnAgent.Initialize(domain);
+            _htnAgent.Prepare(domain);
 
             _htnAgent.SensorContainer.AddSensor((int)WorldState.HasRedKey, new GameObjectActiveSensor(_redKey, true));
             _htnAgent.SensorContainer.AddSensor((int)WorldState.HasBlueKey, new GameObjectActiveSensor(_blueKey, true));
