@@ -52,6 +52,8 @@ namespace UHTN
         {
             return _worldStateDesc.CreateWorldState();
         }
+        
+        public int StateLength => _worldStateDesc.StateLength;
 
         public void Dispose()
         {

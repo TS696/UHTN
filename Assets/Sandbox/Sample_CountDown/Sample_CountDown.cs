@@ -48,7 +48,7 @@ namespace Sandbox.Sample_CountDown
 
             var domain = builder.Resolve();
             _htnAgent.Initialize(domain);
-            _htnAgent.AddSensor((int)WorldState.Count, new FixedValueSensor(_count));
+            _htnAgent.SensorContainer.AddSensor((int)WorldState.Count, new FixedValueSensor(_count));
             _htnAgent.Planner.WorldState.OnValueChanged += (index, value, _) =>
             {
                 if (index == (int)WorldState.Count)
