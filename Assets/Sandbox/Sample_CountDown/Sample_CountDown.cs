@@ -1,9 +1,11 @@
+using Sandbox.Common;
 using UHTN;
+using UHTN.Agent;
 using UHTN.Builder;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Sandbox
+namespace Sandbox.Sample_CountDown
 {
     [RequireComponent(typeof(HtnAgent))]
     public class Sample_CountDown : MonoBehaviour
@@ -38,23 +40,43 @@ namespace Sandbox
                             builder.Primitive().Operator(new WaitForSecondsOperator(1)),
                             builder.Primitive()
                                 .Precondition(WorldState.Count, StateCondition.GreaterThan(0))
-                                .Effect(WorldState.Count, StateEffect.Subtract(1))
-                                .Operator(() =>
-                                {
-                                    _count--;
-                                    _text.text = _count.ToString();
-                                }),
+                                .Effect(WorldState.Count, StateEffect.Subtract(1)),
                             builder.CompoundSlot(builder.Root, DecompositionTiming.Immediate)
                         ),
                     builder.Method()
                 );
 
-            var (domain, worldState) = builder.Resolve();
-            _htnAgent.Initialize(domain, worldState.Value);
+            var domain = builder.Resolve();
+            _htnAgent.Prepare(domain);
+            _htnAgent.SensorContainer.AddSensor((int)WorldState.Count, new FixedValueSensor(_count));
+            _htnAgent.Planner.WorldState.OnValueChanged += (index, value, _) =>
+            {
+                if (index == (int)WorldState.Count)
+                {
+                    _count = value;
+                    _text.text = _count.ToString();
+                }
+            };
+            
             _htnAgent.Run();
 
-            worldState.SetInt(WorldState.Count, _count);
             _text.text = _count.ToString();
+        }
+
+        private class FixedValueSensor : IIntSensor
+        {
+            public SensorUpdateMode UpdateMode => SensorUpdateMode.PreExecuteDomain;
+            private readonly int _value;
+
+            public FixedValueSensor(int value)
+            {
+                _value = value;
+            }
+
+            public int Update(int current)
+            {
+                return _value;
+            }
         }
     }
 }

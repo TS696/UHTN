@@ -4,24 +4,17 @@ namespace UHTN
 {
     public class CompoundTask : ICompoundTask
     {
-        public TaskAttribute Attribute { get; }
+        public TaskType Type => TaskType.Compound;
         public string Name { get; } = "CompoundTask";
 
-        public List<IMethod> Methods { get; }
+        public List<IMethod> Methods { get; } = new();
 
-        public CompoundTask(string name, DecompositionTiming decompositionTiming)
+        public CompoundTask(string name = "")
         {
             if (!string.IsNullOrEmpty(name))
             {
                 Name = name;
             }
-
-            Attribute = new TaskAttribute(TaskType.Compound, decompositionTiming);
-            Methods = new List<IMethod>();
-        }
-
-        public CompoundTask(DecompositionTiming decompositionTiming) : this("", decompositionTiming)
-        {
         }
     }
 }

@@ -29,9 +29,8 @@ namespace Tests
                         )
                 );
 
-            var (domain, worldState) = builder.Resolve();
-            var planner = new Planner(domain, worldState.Value);
-            planner.ExecutionType = PlannerExecutionType.RunUntilSuccess;
+            var domain = builder.Resolve();
+            var planner = new Planner(domain, domain.CreateWorldState());
             planner.Begin();
 
             var tickCount = 0;
@@ -40,8 +39,8 @@ namespace Tests
                 tickCount++;
             }
 
-            Assert.AreEqual(3, contextValue);
-            Assert.AreEqual(2, tickCount);
+            Assert.That(contextValue, Is.EqualTo(3));
+            Assert.That(tickCount, Is.EqualTo(2));
             planner.Dispose();
         }
 
@@ -63,10 +62,9 @@ namespace Tests
                         )
                 );
 
-            var (domain, worldState) = builder.Resolve();
-            var planner = new Planner(domain, worldState.Value);
+            var domain = builder.Resolve();
+            var planner = new Planner(domain, domain.CreateWorldState());
 
-            planner.ExecutionType = PlannerExecutionType.RunUntilSuccess;
             planner.Begin();
 
             var tickCount = 0;
@@ -79,7 +77,7 @@ namespace Tests
 
             LogAssert.Expect(LogType.Log, "Method2");
             LogAssert.Expect(LogType.Log, "Method1");
-            Assert.AreEqual(2, tickCount);
+            Assert.That(tickCount, Is.EqualTo(2));
         }
 
         [Test]
@@ -102,9 +100,9 @@ namespace Tests
                         )
                 );
 
-            var (domain, worldState) = builder.Resolve();
-            var planner = new Planner(domain, worldState.Value);
-            planner.ExecutionType = PlannerExecutionType.RunUntilSuccess;
+            var domain = builder.Resolve();
+            var worldState = domain.CreateWorldState();
+            var planner = new Planner(domain, worldState);
             planner.Begin();
 
             var tickCount = 0;
@@ -113,7 +111,7 @@ namespace Tests
                 tickCount++;
                 if (tickCount >= 2)
                 {
-                    worldState.SetInt(TestState.A, 1);
+                    worldState.SetValue((int)TestState.A, 1);
                 }
             }
 
@@ -155,9 +153,9 @@ namespace Tests
                         )
                 );
 
-            var (domain, worldState) = builder.Resolve();
-            var planner = new Planner(domain, worldState.Value);
-            planner.ExecutionType = PlannerExecutionType.RunUntilSuccess;
+            var domain = builder.Resolve();
+            var worldState = domain.CreateWorldState();
+            var planner = new Planner(domain, worldState);
             planner.Begin();
 
             var tickCount = 0;
@@ -166,11 +164,11 @@ namespace Tests
                 tickCount++;
                 if (tickCount >= 3)
                 {
-                    worldState.SetInt(TestState.A, 2);
+                    worldState.SetValue((int)TestState.A, 2);
                 }
                 else if (tickCount >= 2)
                 {
-                    worldState.SetInt(TestState.A, 1);
+                    worldState.SetValue((int)TestState.A, 1);
                 }
             }
 
@@ -218,9 +216,9 @@ namespace Tests
                         )
                 );
 
-            var (domain, worldState) = builder.Resolve();
-            var planner = new Planner(domain, worldState.Value);
-            planner.ExecutionType = PlannerExecutionType.RunUntilSuccess;
+            var domain = builder.Resolve();
+            var worldState = domain.CreateWorldState();
+            var planner = new Planner(domain, worldState);
             planner.Begin();
 
             var tickCount = 0;
@@ -229,7 +227,7 @@ namespace Tests
                 tickCount++;
                 if (tickCount >= 4)
                 {
-                    worldState.SetInt(TestState.A, 1);
+                    worldState.SetValue((int)TestState.A, 1);
                 }
             }
 

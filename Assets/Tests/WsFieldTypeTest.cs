@@ -25,14 +25,14 @@ namespace Tests
             Blue,
             Yellow
         }
-
-        private EnumWorldState<WorldStates> _worldState;
+        
+        private WorldState _worldState;
 
         [SetUp]
         public void SetUp()
         {
-            var description = EnumWorldState<WorldStates>.CreateDescription();
-            _worldState = new EnumWorldState<WorldStates>(description.CreateWorldState());
+            var description = DomainBuilder<WorldStates>.CreateDescription();
+            _worldState = description.CreateWorldState();
         }
 
         [TestCase(1)]
@@ -40,21 +40,21 @@ namespace Tests
         [TestCase(int.MaxValue)]
         public void IntValidateSuccessTest(int value)
         {
-            _worldState.SetInt(WorldStates.Int, value);
+            _worldState.SetValue((int)WorldStates.Int, value);
         }
 
         [TestCase(true)]
         [TestCase(false)]
         public void BoolValidateSuccessTest(bool value)
         {
-            _worldState.SetBool(WorldStates.Bool, value);
+            _worldState.SetValue((int)WorldStates.Bool, value? 1 : 0);
         }
 
         [TestCase(-1)]
         [TestCase(2)]
         public void BoolValidateFailTest(int value)
         {
-            Assert.Throws<ArgumentOutOfRangeException>(() => _worldState.SetInt(WorldStates.Bool, value));
+            Assert.Throws<ArgumentOutOfRangeException>(() => _worldState.SetValue((int)WorldStates.Bool, value));
         }
 
         [TestCase(Colors.Red)]
@@ -62,14 +62,14 @@ namespace Tests
         [TestCase(Colors.Yellow)]
         public void EnumValidateSuccessTest(Colors value)
         {
-            _worldState.SetEnum(WorldStates.Enum, value);
+            _worldState.SetValue((int)WorldStates.Enum, (int)value);
         }
 
         [TestCase(4)]
         [TestCase(-1)]
         public void EnumValidateFailTest(Colors value)
         {
-            Assert.Throws<ArgumentOutOfRangeException>(() => _worldState.SetEnum(WorldStates.Enum, value));
+            Assert.Throws<ArgumentOutOfRangeException>(() => _worldState.SetValue((int)WorldStates.Enum, (int)value));
         }
     }
 }

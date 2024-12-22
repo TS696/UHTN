@@ -1,7 +1,7 @@
 using UHTN;
 using UnityEngine;
 
-namespace Sandbox
+namespace Sandbox.Common
 {
     public class WaitForSecondsOperator : IOperator
     {

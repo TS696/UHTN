@@ -5,17 +5,9 @@ using UnityEngine;
 
 namespace UHTN
 {
-    public enum PlannerExecutionType
-    {
-        RunUntilSuccess,
-        RePlanForever
-    }
-
     public class Planner : IDisposable
     {
         public bool IsRunning { get; private set; }
-
-        public PlannerExecutionType ExecutionType { get; set; }
 
         public PlanRunner PlanRunner { get; } = new();
 
@@ -146,12 +138,6 @@ namespace UHTN
             switch (PlanRunner.State)
             {
                 case PlanRunner.RunnerState.Success:
-                    if (ExecutionType == PlannerExecutionType.RunUntilSuccess)
-                    {
-                        IsRunning = false;
-                        return false;
-                    }
-
                     OnSuccess();
                     break;
                 case PlanRunner.RunnerState.Failed:
@@ -159,7 +145,7 @@ namespace UHTN
                     break;
             }
 
-            return true;
+            return IsRunning;
         }
 
         private void RequestPlan(PlanRequestType requestType, int targetTaskIndex = 0, int processIndex = 0)
@@ -207,7 +193,7 @@ namespace UHTN
 
         private void OnSuccess()
         {
-            RequestPlan(PlanRequestType.Begin);
+            IsRunning = false;
         }
 
         private void OnFailed()

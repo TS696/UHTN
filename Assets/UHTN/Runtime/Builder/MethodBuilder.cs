@@ -13,7 +13,7 @@ namespace UHTN.Builder
 
         public MethodBuilder<T> Precondition(T type, StateCondition value)
         {
-            Method.PreConditions[(int)(object)type] = value;
+            Method.Preconditions.Add(new ConditionToDecompose((int)(object)type, value));
             return this;
         }
 
@@ -21,7 +21,7 @@ namespace UHTN.Builder
         {
             foreach (var taskBuilder in taskBuilders)
             {
-                Method.SubTasks.Add(taskBuilder.Task);
+                Method.SubTasks.Add(new SubTask(taskBuilder.Task, taskBuilder.DecompositionTiming));
             }
 
             return this;

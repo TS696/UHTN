@@ -12,5 +12,16 @@
         {
             return value is 0 or 1;
         }
+
+        public StateComparisonOperator[] ApplicableComparisonOperators { get; } = 
+        {
+            StateComparisonOperator.Equal,
+            StateComparisonOperator.NotEqual
+        };
+
+        public StateEffectOperator[] ApplicableEffectOperators { get; } =
+        {
+            StateEffectOperator.Assign
+        };
     }
 }

@@ -250,11 +250,12 @@ namespace UHTN
 
         private bool CheckTaskCondition(int taskIndex, WorldState worldState)
         {
-            var start = taskIndex * worldState.StateLength;
-            for (var i = 0; i < worldState.StateLength; i++)
+            var task = Domain.Tasks[taskIndex];
+            
+            for (var i = task.PreconditionRange.Start; i < task.PreconditionRange.End; i++)
             {
-                var offsetIndex = start + i;
-                if (!Domain.TaskPreconditions[offsetIndex].Check(worldState.Values[i]))
+                var condition = Domain.TaskPreconditions[i];
+                if (!condition.Value.Check(worldState.Values[condition.StateIndex]))
                 {
                     return false;
                 }
@@ -265,17 +266,17 @@ namespace UHTN
 
         private void ApplyTaskEffect(int taskIndex, WorldState worldState, bool isExpect)
         {
-            var start = taskIndex * worldState.StateLength;
-            for (var i = 0; i < worldState.StateLength; i++)
+            var task = Domain.Tasks[taskIndex];
+
+            for (var i = task.EffectRange.Start; i < task.EffectRange.End; i++)
             {
-                var offsetIndex = start + i;
-                var effect = Domain.TaskEffects[offsetIndex];
-                if (!isExpect && effect.Type == StateEffectType.PlanOnly)
+                var effect = Domain.TaskEffects[i];
+                if (!isExpect && effect.Value.Type == StateEffectType.PlanOnly)
                 {
                     continue;
                 }
 
-                worldState.SetValue(i, effect.Apply(worldState.Values[i]), WorldState.DirtyReason.PlanRunner);
+                worldState.SetValue(effect.StateIndex, effect.Value.Apply(worldState.Values[effect.StateIndex]), WorldState.DirtyReason.PlanRunner);
             }
         }
 
@@ -309,7 +310,7 @@ namespace UHTN
         {
             var crProcess = _processList[^1];
             var nextTaskIndex = crProcess.Plan.Tasks[crProcess.OperationIndex];
-            if (Domain.TaskAttributes[nextTaskIndex].Type == TaskType.Compound)
+            if (Domain.Tasks[nextTaskIndex].Type == TaskType.Compound)
             {
                 if (!PlannerCore.PlanImmediate(Domain, WorldState, out var partialPlan, nextTaskIndex))
                 {

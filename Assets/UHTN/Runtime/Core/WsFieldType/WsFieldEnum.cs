@@ -13,5 +13,16 @@ namespace UHTN
         {
             return Enum.IsDefined(typeof(T), value);
         }
+
+        public StateComparisonOperator[] ApplicableComparisonOperators { get; } =
+        {
+            StateComparisonOperator.Equal,
+            StateComparisonOperator.NotEqual,
+        };
+
+        public StateEffectOperator[] ApplicableEffectOperators { get; } =
+        {
+            StateEffectOperator.Assign,
+        };
     }
 }
