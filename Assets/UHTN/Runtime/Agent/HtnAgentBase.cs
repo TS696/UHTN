@@ -3,16 +3,22 @@ using UnityEngine;
 
 namespace UHTN.Agent
 {
+    public enum DomainExecutionType
+    {
+        RunUntilSuccess,
+        RePlanForever
+    }
+
     public abstract class HtnAgentBase : MonoBehaviour
     {
-        private enum DomainExecutionType
-        {
-            RunUntilSuccess,
-            RePlanForever
-        }
-
         [SerializeField]
         private DomainExecutionType _executionType;
+
+        public DomainExecutionType ExecutionType
+        {
+            get => _executionType;
+            set => _executionType = value;
+        }
 
         public bool IsRunning { get; private set; }
 
