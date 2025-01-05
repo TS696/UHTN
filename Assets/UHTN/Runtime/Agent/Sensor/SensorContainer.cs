@@ -4,7 +4,7 @@ namespace UHTN.Agent
 {
     public class SensorContainer
     {
-        private class SensorHolder
+        public class SensorHolder
         {
             private readonly int _index;
             private readonly ISensor _sensor;
@@ -25,6 +25,7 @@ namespace UHTN.Agent
 
         private readonly WorldState _worldState;
         private readonly List<SensorHolder> _sensors = new();
+        public IReadOnlyList<SensorHolder> Sensors => _sensors;
 
         public SensorContainer(WorldState worldState)
         {
