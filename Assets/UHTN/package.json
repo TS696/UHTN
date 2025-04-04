@@ -1,7 +1,7 @@
 ﻿{
   "name": "com.ts696.uhtn",
   "displayName": "UHTN",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "unity": "6000.0",
   "description": "Hierarchical Task Network library for unity.",
   "license": "MIT",
