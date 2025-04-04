@@ -43,6 +43,7 @@ namespace UHTN.Editor.DomainAssets
 
             var effectTypeField = new EnumField(StateEffectType.PlanAndExecute);
             effectTypeField.BindProperty(effectTypeProperty);
+            effectTypeField.style.marginLeft = 20;
             rootElement.Add(effectTypeField);
 
             stateNamePopup.RegisterValueChangedCallback(evt =>

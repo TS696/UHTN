@@ -10,6 +10,7 @@ namespace UHTN.Editor.DomainAssets
         {
             var toggle = new Toggle();
             toggle.value = defaultValue == 1;
+            toggle.style.marginTop = 3;
             toggle.RegisterValueChangedCallback(e => onValueChanged(e.newValue ? 1 : 0));
             return toggle;
         }
