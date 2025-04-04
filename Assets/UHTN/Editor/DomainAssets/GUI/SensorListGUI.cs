@@ -49,6 +49,9 @@ namespace UHTN.Editor.DomainAssets
                     }
 
                     using var verticalScope = new EditorGUILayout.VerticalScope(GUI.skin.box);
+                    var label = sensorCreatorProperty.managedReferenceValue.GetType().Name;
+                    var size = EditorStyles.label.CalcSize(new GUIContent(label));
+                    EditorGUIUtility.labelWidth = size.x;
                     EditorGUILayout.PropertyField(sensorCreatorProperty, new GUIContent(sensorCreatorProperty.managedReferenceValue.GetType().Name),
                         true);
                     sensorCreatorProperty.serializedObject.ApplyModifiedProperties();
