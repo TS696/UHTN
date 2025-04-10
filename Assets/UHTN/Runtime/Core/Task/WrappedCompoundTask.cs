@@ -4,7 +4,6 @@ namespace UHTN
 {
     public class WrappedCompoundTask : ICompoundTask
     {
-        public TaskType Type => TaskType.Compound;
         public string Name { get; }
         public List<IMethod> Methods => _source.Methods;
 

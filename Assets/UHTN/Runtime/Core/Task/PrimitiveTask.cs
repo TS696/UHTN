@@ -5,7 +5,6 @@ namespace UHTN
 {
     public class PrimitiveTask : IPrimitiveTask
     {
-        public TaskType Type => TaskType.Primitive;
         public string Name { get; } = "PrimitiveTask";
         public List<ConditionToDecompose> Preconditions { get; } = new();
         public List<EffectToDecompose> Effects { get; } = new();
